@@ -6,8 +6,8 @@ public class PlayerMovement : MonoBehaviour
     public Rigidbody2D rb;
     void FixedUpdate()
     {
-        float horizontal = Input.GetAxis("Horizontal");
-        float vertical = Input.GetAxis("Vertical");
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
         rb.linearVelocity = new Vector2(horizontal, vertical) * speed;
     }
 }
