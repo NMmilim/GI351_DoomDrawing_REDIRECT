@@ -1,18 +1,14 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    float hp = 1;
 
-    
-    void Awake()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        
-    }
-
-    
-    void Update()
-    {
-        
+        if (collision.gameObject.tag == "Bullet")
+        {
+            Destroy(gameObject);
+        }
     }
 }
