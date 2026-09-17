@@ -4,7 +4,10 @@ public class Bullet : MonoBehaviour
 {
     public LayerMask collisionMask;
     
+    public int maxBounce = 3;
+    private int bounce = 0;
     private float speed = 15f;
+    float damage = 1;
     void FixedUpdate()
     {
         // Move the shuriken forward (in 2D, "up" is usually forward)
@@ -23,6 +26,11 @@ public class Bullet : MonoBehaviour
             // Rotate to face the new direction
             float angle = Mathf.Atan2(reflectDir.y, reflectDir.x) * Mathf.Rad2Deg - 90f;
             transform.rotation = Quaternion.Euler(0, 0, angle);
+            bounce++;
+            if (bounce >= maxBounce)
+            {
+                Destroy(gameObject);
+            }
         }
     }
 }

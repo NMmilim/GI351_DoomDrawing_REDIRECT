@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class PlayerMovement : Player
 {
-    public GameObject Bullet;
+    public GameObject bullet;
+   
     public float speed;
     public Rigidbody2D rb;
     public void Awake()
@@ -26,7 +27,7 @@ public class PlayerMovement : Player
             transform.rotation = Quaternion.Euler(0, 0, angle - 90); // Subtract 90 if your sprite faces up
       if (Input.GetMouseButtonDown(0))
         {
-            Instantiate(Bullet, transform.position + transform.up*0.5f , transform.rotation);
+            Instantiate(bullet, transform.position + transform.up*0.5f , transform.rotation);
         }
     }
     public void FixedUpdate()
@@ -35,6 +36,7 @@ public class PlayerMovement : Player
         float vertical = Input.GetAxis("Vertical");
 
         rb.linearVelocity = new Vector2(horizontal, vertical) * speed;
+      
 
     }
 
