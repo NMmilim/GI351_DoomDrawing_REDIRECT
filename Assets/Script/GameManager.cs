@@ -1,10 +1,8 @@
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
-public class Damaging : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
-     float damage = 0;
-    float hp = 0;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
