@@ -20,7 +20,13 @@ public class Bullet : MonoBehaviour
 
         if (hit.collider != null)
         {
-            
+            Enemy enemy = hit.collider.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.RegisterHit();
+                Destroy(gameObject); 
+                return;
+            }
             Vector2 reflectDir = Vector2.Reflect(transform.up, hit.normal);
 
             

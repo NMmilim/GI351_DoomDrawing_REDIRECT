@@ -16,15 +16,15 @@ public class PlayerMovement : Player
     }
     public void Update()
     {
-        // Get the mouse position in world space
+        
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             mousePosition.z = 0; // Set z to 0 for 2D
-            // Calculate the direction from the player to the mouse position
+            
             Vector3 direction = (mousePosition - transform.position).normalized;
-            // Calculate the angle in degrees
+            
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            // Rotate the player to face the mouse position
-            transform.rotation = Quaternion.Euler(0, 0, angle - 90); // Subtract 90 if your sprite faces up
+            
+            transform.rotation = Quaternion.Euler(0, 0, angle - 90); 
  
     }
     public void FixedUpdate()

@@ -3,10 +3,14 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    public int maxHit = 1;
+    private int currentHit=0;
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    public void RegisterHit()
     {
-        if (collision.gameObject.tag == "Bullet")
+        currentHit++;
+
+        if (currentHit >= maxHit)
         {
             Destroy(gameObject);
         }
