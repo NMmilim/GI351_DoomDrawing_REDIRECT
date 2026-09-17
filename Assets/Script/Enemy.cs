@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    float HP = 1;
+    float hp = 1;
 
     
     void Awake()
