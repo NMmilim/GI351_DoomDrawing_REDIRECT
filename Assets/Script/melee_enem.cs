@@ -1,5 +1,6 @@
 
 
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class melee_enem : Enemy
@@ -7,16 +8,23 @@ public class melee_enem : Enemy
 
     public float movespeed;
     public Transform player;
-void Start()
+    EnemView enemView;
+    void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
+        enemView = GetComponent<EnemView>();
     }
-
-    
-    void FixedUpdate()
+    void Update()
     {
-        Vector2 direction =(player.position - transform.position).normalized;
-        transform.position = Vector2.MoveTowards(transform.position, player.position, movespeed * Time.deltaTime);
+        if (enemView.IsChasing)
+        {
+            Vector2 direction = (player.position - transform.position).normalized;
+            transform.position += (Vector3)direction * movespeed * Time.deltaTime;
+            transform.rotation = Quaternion.Euler(0, 0, Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90);
+        }
+
+
+
+
     }
-    
 }
