@@ -1,13 +1,15 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject goMenu;
+    public GameObject _player;
     public bool pause;
     void Start()
     {
-        
+       _player = GameObject.FindGameObjectWithTag("Player");
     }
 
     
@@ -45,5 +47,13 @@ public class GameManager : MonoBehaviour
     public void QuitGame()
     {
     Application.Quit();
+    }
+    void OnTriggerEnter2D(Collider2D other)
+       
+    {
+        if (other.CompareTag("Player"))
+        {
+           SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
 }

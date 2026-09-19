@@ -5,7 +5,7 @@ public class Enemy : MonoBehaviour
 {
     public int maxHit = 1;
     private int currentHit=0;
-
+   
     public void RegisterHit()
     {
         currentHit++;

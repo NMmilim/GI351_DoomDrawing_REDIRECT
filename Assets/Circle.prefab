@@ -12,8 +12,7 @@ GameObject:
   - component: {fileID: 1850790098995151296}
   - component: {fileID: 4136076783237361327}
   - component: {fileID: 5172464391689123149}
-  - component: {fileID: 2075751831179781994}
-  - component: {fileID: 7952254222445613902}
+  - component: {fileID: -91713454225358427}
   m_Layer: 0
   m_Name: Circle
   m_TagString: Player
@@ -159,22 +158,7 @@ CircleCollider2D:
   m_CompositeOrder: 0
   m_Offset: {x: -0.004292488, y: 0}
   m_Radius: 0.4957075
---- !u!114 &2075751831179781994
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5571269701470894390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b09a02bdf4e15314499f327387fd8846, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  bullet: {fileID: 7815651744343167597, guid: c8b1f448ca993224caff62ccc7391511, type: 3}
-  speed: 0
-  rb: {fileID: 4136076783237361327}
---- !u!114 &7952254222445613902
+--- !u!114 &-91713454225358427
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -187,7 +171,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Shooting
   bulletPrefab: {fileID: 7815651744343167597, guid: c8b1f448ca993224caff62ccc7391511, type: 3}
-  firepos: {fileID: 2484845314595484743}
+  firepos: {fileID: 0}
 --- !u!1 &8373574165650845069
 GameObject:
   m_ObjectHideFlags: 0

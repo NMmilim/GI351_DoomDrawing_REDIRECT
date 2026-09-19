@@ -9,14 +9,16 @@ public class melee_enem : Enemy
     public float movespeed;
     public Transform player;
     EnemView enemView;
+  //  public Animator MeleeAnim;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
         enemView = GetComponent<EnemView>();
+        
     }
     void Update()
     {
-        if (enemView.IsChasing)
+        if (enemView.IsChasing == true)
         {
             Vector2 direction = (player.position - transform.position).normalized;
             transform.position += (Vector3)direction * movespeed * Time.deltaTime;

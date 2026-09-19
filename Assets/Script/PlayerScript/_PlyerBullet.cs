@@ -6,7 +6,7 @@ public class Bullet : MonoBehaviour
     
     public int maxBounce = 1;
     private int bounce = 0;
-    public float speed = 15f;
+    public float speed = 8;
     
     void FixedUpdate()
     {
