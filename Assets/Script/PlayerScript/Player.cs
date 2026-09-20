@@ -1,20 +1,17 @@
 using UnityEngine;
 public class Player : MonoBehaviour
 {
-    public class PlayerMovement { }
-    void Awake()
+
+    public void RegisterHit()
     {
-        
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
+        PlayerManagement.Instance.hitpoint++;
+
+        if (PlayerManagement.Instance.hitpoint >= PlayerManagement.Instance.maxHitpoint)
+        {
+            Destroy(gameObject);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 }
+    
+   

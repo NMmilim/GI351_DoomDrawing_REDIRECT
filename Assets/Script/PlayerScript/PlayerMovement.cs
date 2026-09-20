@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : Player
 {
     
     public GameObject bullet;
@@ -29,15 +29,7 @@ public class PlayerMovement : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0, 0, angle - 90);
     }
-         public void RegisterHit()
-    {
-        PlayerManagement.Instance.hitpoint++;
-
-        if (PlayerManagement.Instance.hitpoint >= PlayerManagement.Instance.maxHitpoint)
-        {
-            Destroy(gameObject);
-        }
-    }
+         
 
         public void FixedUpdate()
     {

@@ -22,7 +22,7 @@ public class Bullet : MonoBehaviour
         if (hit.collider != null)
         {
             Enemy_Range enemy = hit.collider.GetComponent<Enemy_Range>();
-            PlayerMovement player = hit.collider.GetComponent<PlayerMovement>
+            Player player = hit.collider.GetComponent<Player>();
             if (enemy != null)
             {
                 enemy.RegisterHit();
