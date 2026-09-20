@@ -3,27 +3,22 @@ using UnityEngine;
 public class EnemyBullet : MonoBehaviour
 {
     public LayerMask collisionMask;
-    
-    
-    public PlayerMovement _player;
+    public int Damage = Enemy_StatusManage.Instance.damage;
     public float speed = 5;
-    
+    public float firerate = Enemy_StatusManage.Instance.firerate;
     void FixedUpdate()
     {
-        
+
         transform.Translate(Vector3.up * Time.deltaTime * speed);
-
-      
-
-        
         RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.up, Time.deltaTime * speed + 0.1f, collisionMask);
+        Player player;
 
         if (hit.collider != null)
         {
-            _player = hit.collider.GetComponent<PlayerMovement>();
-            if (_player != null)
+            player = hit.collider.GetComponent<Player>();
+            if (player != null)
             {
-                _player.RegisterHit();
+                player.RegisterHit();
                 Destroy(gameObject);
                 return;
             }
