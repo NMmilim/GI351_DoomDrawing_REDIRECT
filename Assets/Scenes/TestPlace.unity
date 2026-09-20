@@ -223,7 +223,6 @@ GameObject:
   - component: {fileID: 30468293}
   - component: {fileID: 30468292}
   - component: {fileID: 30468291}
-  - component: {fileID: 30468296}
   m_Layer: 0
   m_Name: MeleeEnem
   m_TagString: Enemy
@@ -243,9 +242,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3205f2f98a3386a4383d6031f628c564, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::melee_enem
-  maxHit: 1
-  movespeed: 2
-  player: {fileID: 1639588544}
 --- !u!58 &30468292
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -384,18 +380,6 @@ Transform:
   - {fileID: 1738321429}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &30468296
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 30468290}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dac16cc68eb908346b4c5060b75c2901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemView
 --- !u!1 &116290039
 GameObject:
   m_ObjectHideFlags: 0
@@ -520,6 +504,57 @@ EdgeCollider2D:
   m_AdjacentEndPoint: {x: 0, y: 0}
   m_UseAdjacentStartPoint: 0
   m_UseAdjacentEndPoint: 0
+--- !u!1 &153315762
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 153315764}
+  - component: {fileID: 153315763}
+  m_Layer: 0
+  m_Name: Enemy_Stats
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &153315763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153315762}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd49a0716130f1e4097feeb8365362a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_StatusManage
+  maxhp: 1
+  hp: 1
+  armor: 0
+  speed: 0
+  damage: 50
+  firerate: 0
+  meleedamage: 0
+--- !u!4 &153315764
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 153315762}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -3.67404, y: -1.3654, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &234762820
 GameObject:
   m_ObjectHideFlags: 0
@@ -549,9 +584,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fedeed84bc7a334cbc21d980d865ca7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManagement
-  hitpoint: 0
-  maxHitpoint: 3
-  hitdmg: 1
+  hp: 100
+  maxhp: 100
+  dmg: 1
   armor: 0
   speed: 5
   UpgRicochet: 0
@@ -2086,7 +2121,6 @@ GameObject:
   - component: {fileID: 1951503927}
   - component: {fileID: 1951503926}
   - component: {fileID: 1951503930}
-  - component: {fileID: 1951503931}
   m_Layer: 0
   m_Name: enemy
   m_TagString: Enemy
@@ -2243,19 +2277,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4323ab5d5a46c04b8a693fb2ce68f46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  maxHit: 1
---- !u!114 &1951503931
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1951503924}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dac16cc68eb908346b4c5060b75c2901, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemView
 --- !u!1 &1991334228
 GameObject:
   m_ObjectHideFlags: 0
@@ -2404,6 +2425,7 @@ SceneRoots:
   - {fileID: 30468295}
   - {fileID: 150249960}
   - {fileID: 1448903092}
+  - {fileID: 153315764}
   - {fileID: 234762822}
   - {fileID: 1546477818}
   - {fileID: 1418027257}

@@ -3,15 +3,19 @@ using UnityEngine;
 
 public class Enemy_Range : MonoBehaviour
 {
-    public int maxHit = Enemy_StatusManage.Instance.maxhp;
+    int hp;
+    float firerate;
+    public void Start()
+    {
+        hp = Enemy_StatusManage.Instance.hp;
+        firerate = Enemy_StatusManage.Instance.firerate;
 
-    private int currentHit = Enemy_StatusManage.Instance.hp;
-   
+    }
     public void RegisterHit()
     {
-        currentHit++;
-
-        if (currentHit >= maxHit)
+        Debug.Log(hp);
+        hp -= PlayerManagement.Instance.dmg;
+        if (hp == 0)
         {
             Destroy(gameObject);
         }

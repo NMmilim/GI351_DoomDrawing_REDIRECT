@@ -4,9 +4,9 @@ public class Player : MonoBehaviour
 
     public void RegisterHit()
     {
-        PlayerManagement.Instance.hitpoint++;
+        PlayerManagement.Instance.hp -= PlayerManagement.Instance.dmg;
 
-        if (PlayerManagement.Instance.hitpoint >= PlayerManagement.Instance.maxHitpoint)
+        if (PlayerManagement.Instance.hp == 0)
         {
             Destroy(gameObject);
         }

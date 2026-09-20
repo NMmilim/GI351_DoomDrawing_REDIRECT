@@ -12,4 +12,15 @@ public class Enemy_StatusManage : MonoBehaviour
     public int damage;
     public float firerate;
     public int meleedamage;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 }
