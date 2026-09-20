@@ -1,7 +1,7 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy_Range : MonoBehaviour
 {
     public int maxHit = 1;
     private int currentHit=0;

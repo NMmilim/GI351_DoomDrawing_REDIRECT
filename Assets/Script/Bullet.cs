@@ -8,6 +8,7 @@ public class Bullet : MonoBehaviour
     private int bounce = 0;
     public float speed = 8;
     
+    
     void FixedUpdate()
     {
         
@@ -20,11 +21,18 @@ public class Bullet : MonoBehaviour
 
         if (hit.collider != null)
         {
-            Enemy enemy = hit.collider.GetComponent<Enemy>();
+            Enemy_Range enemy = hit.collider.GetComponent<Enemy_Range>();
+            PlayerMovement player = hit.collider.GetComponent<PlayerMovement>
             if (enemy != null)
             {
                 enemy.RegisterHit();
                 Destroy(gameObject); 
+                return;
+            }
+            if (player != null)
+            {
+                player.RegisterHit();
+                Destroy(gameObject);
                 return;
             }
             Vector2 reflectDir = Vector2.Reflect(transform.up, hit.normal);
