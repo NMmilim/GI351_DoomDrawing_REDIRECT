@@ -223,6 +223,7 @@ GameObject:
   - component: {fileID: 30468293}
   - component: {fileID: 30468292}
   - component: {fileID: 30468291}
+  - component: {fileID: 30468296}
   m_Layer: 0
   m_Name: MeleeEnem
   m_TagString: Enemy
@@ -304,7 +305,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!212 &30468294
 SpriteRenderer:
   serializedVersion: 2
@@ -372,14 +373,27 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 30468290}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -8.11, y: -2.52, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: -0.6460574, w: 0.76328886}
+  m_LocalPosition: {x: -8.11, y: -0.28, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1738321429}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -80.49}
+--- !u!114 &30468296
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 30468290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25ed280698e68cc44bbb2d7ea3b0966a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Enemy_Movement
+  player: {fileID: 1639588544}
 --- !u!1 &116290039
 GameObject:
   m_ObjectHideFlags: 0
@@ -639,13 +653,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 556026027}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.13982, y: 0.40421003, z: -10}
+  m_LocalRotation: {x: 0.000000029802326, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.66018, y: 0.40421003, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 116290040}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0.324, z: 0}
 --- !u!114 &556026029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -948,7 +962,7 @@ Transform:
   m_GameObject: {fileID: 1168737300}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.13982, y: 0.40421003, z: -10}
+  m_LocalPosition: {x: 1.66018, y: 0.40421003, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1289,7 +1303,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7325970510573476651, guid: 8aef30c11a2dedc42aeb38cda907eea5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.98
+      value: 0.82
       objectReference: {fileID: 0}
     - target: {fileID: 7325970510573476651, guid: 8aef30c11a2dedc42aeb38cda907eea5, type: 3}
       propertyPath: m_LocalPosition.y

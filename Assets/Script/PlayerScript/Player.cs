@@ -8,13 +8,18 @@ public class Player : MonoBehaviour
     {
         PlayerManagement.Instance.hp -= Enemy_StatusManage.Instance.damage;
 
-        if (PlayerManagement.Instance.hp == 0)
+        if (PlayerManagement.Instance.hp <= 0)
         {
-            Time.timeScale = 0;
+            gameObject.SetActive(false);
            // SceneManager.LoadScene(1);
         }
     }
+    public void ChangeHealth(int amount)
+    {
+        PlayerManagement.Instance.hp += amount;
 
+
+    }
 }
     
    
