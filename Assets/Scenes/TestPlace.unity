@@ -586,7 +586,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerManagement
   hp: 100
   maxhp: 100
-  dmg: 1
+  dmg: 3
   armor: 0
   speed: 5
   UpgRicochet: 0

@@ -1,14 +1,17 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
+   
 
     public void RegisterHit()
     {
-        PlayerManagement.Instance.hp -= PlayerManagement.Instance.dmg;
+        PlayerManagement.Instance.hp -= Enemy_StatusManage.Instance.damage;
 
         if (PlayerManagement.Instance.hp == 0)
         {
-            Destroy(gameObject);
+            Time.timeScale = 0;
+           // SceneManager.LoadScene(1);
         }
     }
 

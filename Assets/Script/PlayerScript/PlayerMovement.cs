@@ -36,9 +36,9 @@ public class PlayerMovement : Player
         if (Time.timeScale == 0f) return;
         float horizontal = Input.GetAxis("Horizontal");
     float vertical = Input.GetAxis("Vertical");
-    //_playeranim.SetFloat("horizontal", horizontal);
-    //_playeranim.SetFloat("vertical", vertical);
-    rb.linearVelocity = new Vector2(horizontal, vertical) * PlayerManagement.Instance.speed;
+        //_playeranim.SetFloat("horizontal", horizontal);
+        //_playeranim.SetFloat("vertical", vertical);
+        rb.linearVelocity = new Vector2(horizontal, vertical) * PlayerManagement.Instance.speed;
 
 
     }

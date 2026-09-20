@@ -26,12 +26,12 @@ public class Bullet : MonoBehaviour
                 Destroy(gameObject); 
                 return;
             }
-            if (player != null)
-            {
-                player.RegisterHit();
-                Destroy(gameObject);
-                return;
-            }
+            //if (player != null)
+            //{
+            //    player.RegisterHit();
+            //    Destroy(gameObject);
+            //    return;
+            //}
             Vector2 reflectDir = Vector2.Reflect(transform.up, hit.normal);
 
             

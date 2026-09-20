@@ -9,14 +9,16 @@ public class Enemy_Range : MonoBehaviour
     {
         hp = Enemy_StatusManage.Instance.hp;
         firerate = Enemy_StatusManage.Instance.firerate;
+        Debug.Log(hp);
 
     }
     public void RegisterHit()
     {
-        Debug.Log(hp);
         hp -= PlayerManagement.Instance.dmg;
-        if (hp == 0)
+        Debug.Log(hp);
+        if (hp <= 0)
         {
+            
             Destroy(gameObject);
         }
     }
