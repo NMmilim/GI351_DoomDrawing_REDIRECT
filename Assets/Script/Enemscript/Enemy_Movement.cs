@@ -21,10 +21,11 @@ public class Enemy_Movement : MonoBehaviour
             rb.linearVelocity = direction * Enemy_StatusManage.Instance.speed;
         }
     }
-public void OnTriggerEnter2D(Collision2D collision)
+public void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player") 
         {
+            Debug.Log("Seen");
             IsChasing = true; 
         }
     
@@ -33,6 +34,7 @@ public void OnTriggerEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Player")
         {
+            Debug.Log("Unseen");
             
             rb.linearVelocity = Vector2.zero;
             IsChasing = false;

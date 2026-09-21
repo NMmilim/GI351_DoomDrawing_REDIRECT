@@ -14,12 +14,7 @@ public class Player : MonoBehaviour
            // SceneManager.LoadScene(1);
         }
     }
-    public void ChangeHealth(int amount)
-    {
-        PlayerManagement.Instance.hp += amount;
-
-
-    }
+ 
 }
     
    
