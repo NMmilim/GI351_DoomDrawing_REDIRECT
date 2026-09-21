@@ -4,10 +4,14 @@ using UnityEngine;
 public class Enemy_Range : MonoBehaviour
 {
     int hp;
+    public GameObject bulletPre;
+    public Transform firepos;
     public int firerate;
     public Rigidbody2D rb;
     public Transform player;
     public FieldOfView EnemyFov;
+    private float nextFireTime = 1;
+   
     public void Start()
     {
         hp = 1;
@@ -22,7 +26,7 @@ public class Enemy_Range : MonoBehaviour
             Destroy(gameObject);
         }
     }
-    public void FixedUpdate()
+public void FixedUpdate()
     {
         if (EnemyFov.CanSeePlayer) 
         {
@@ -30,6 +34,18 @@ public class Enemy_Range : MonoBehaviour
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             transform.rotation = Quaternion.Euler(0, 0, angle);
         }
-        
+
+        if (EnemyFov.CanSeePlayer && Time.time >= nextFireTime)
+        {
+            nextFireTime = Time.time + Enemy_StatusManage.Instance.firerate;
+            Shoot();
+        }
     }
+    void Shoot()
+    {
+        GameObject bullet = Instantiate(bulletPre, firepos.position, transform.rotation);
+        Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
+        rbBullet.linearVelocity = transform.right * 10f; 
+    }
+
 }

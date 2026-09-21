@@ -5,7 +5,7 @@ public class EnemyBullet : MonoBehaviour
     public LayerMask collisionMask;
     public int Damage = Enemy_StatusManage.Instance.damage;
     public float speed = 5;
-    public float firerate = Enemy_StatusManage.Instance.firerate;
+    
     void FixedUpdate()
     {
 

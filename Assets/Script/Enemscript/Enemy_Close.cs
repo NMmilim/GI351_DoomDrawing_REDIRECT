@@ -11,7 +11,7 @@ public class Enemy_Close : Enemy_Range
     
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        collision.gameObject.GetComponent<Player>().RegisterHit();
+        collision.gameObject.GetComponent<Player>().MeleeRegisterHit();
     }
     public void FixedUpdate()
     {
