@@ -24,6 +24,7 @@ public class FieldOfView : MonoBehaviour
     {
         DrawVisionCone();
         DetectPlayer();
+        transform.rotation = transform.parent.rotation;
     }
 
     void DrawVisionCone()
