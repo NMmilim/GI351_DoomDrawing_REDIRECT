@@ -6,10 +6,9 @@ public class Enemy_Range : MonoBehaviour
     int hp;
     public GameObject bulletPre;
     public Transform firepos;
-    public int firerate;
+    private int firerate;
     public Rigidbody2D rb;
     public Transform player;
-    public FieldOfView EnemyFov;
     private float nextFireTime = 1;
    
     public void Start()
@@ -26,15 +25,6 @@ public class Enemy_Range : MonoBehaviour
             Destroy(gameObject);
         }
     }
-//public void FixedUpdate()
-//    {
-//        if (EnemyFov.CanSeePlayer && Time.time >= nextFireTime) 
-//        {
-//            nextFireTime = Time.time + Enemy_StatusManage.Instance.firerate;
-//            Shoot();
-//        }
-
-//    }
     void Shoot()
     {
         GameObject bullet = Instantiate(bulletPre, firepos.position, transform.rotation);

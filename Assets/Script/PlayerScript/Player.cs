@@ -1,29 +1,24 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
 public class Player : MonoBehaviour
 {
-   
 
-    public void RegisterHit()
+    public void RegisterHit(int amount)
     {
-        PlayerManagement.Instance.hp -= Enemy_StatusManage.Instance.damage;
+        PlayerManagement.Instance.hp -= amount;
 
         if (PlayerManagement.Instance.hp <= 0)
         {
-            gameObject.SetActive(false);
+            Time.timeScale = 0;
            // SceneManager.LoadScene(1);
         }
     }
-    public void MeleeRegisterHit()
+    public void RegisterHeal(int amount)
     {
-        PlayerManagement.Instance.hp -= Enemy_StatusManage.Instance.meleedamage;
-
-        if (PlayerManagement.Instance.hp <= 0)
-        {
-            gameObject.SetActive(false);
-            // SceneManager.LoadScene(1);
-        }
+        PlayerManagement.Instance.hp += amount;
     }
+   
 }
     
    

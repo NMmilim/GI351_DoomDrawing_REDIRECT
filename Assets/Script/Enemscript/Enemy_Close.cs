@@ -1,33 +1,35 @@
 
-
-using JetBrains.Annotations;
 using Unity.AppUI.UI;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Enemy_Close : Enemy_Range
+public class Enemy_Close : MonoBehaviour
 {
-   
-    
+    int damage = 30;
+    public FieldOfView EnemyFOV;
+    float speed = 2;
+    private Transform player;
+    Rigidbody2D rb;
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        collision.gameObject.GetComponent<Player>().MeleeRegisterHit();
-    }
-    public void FixedUpdate()
-    {
-        //if (EnemyFov.CanSeePlayer)
-        //{
-        //    Vector2 direction = (player.position - transform.position).normalized;
-        //    float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        //    transform.rotation = Quaternion.Euler(0, 0, angle);
-        //    rb.linearVelocity = direction * Enemy_StatusManage.Instance.speed;
-        //}
+        collision.gameObject.GetComponent<Player>().RegisterHit(-damage); 
+
         
-    //if (!EnemyFov.CanSeePlayer)
-    //    {
-    //        rb.linearVelocity = Vector2.zero;
-    //    }
-    
     }
-  
+    public void Update()
+    {
+        
+        if (EnemyFOV.IsChasing)
+        {
+            Vector2 direction = (player.position - transform.position).normalized;
+            rb.linearVelocity = direction * speed;
+        }
+        else { rb.linearVelocity = Vector2.zero; }
+
+    }
+
 }

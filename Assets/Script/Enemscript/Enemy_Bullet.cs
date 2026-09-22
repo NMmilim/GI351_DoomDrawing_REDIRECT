@@ -3,8 +3,8 @@ using UnityEngine;
 public class EnemyBullet : MonoBehaviour
 {
     public LayerMask collisionMask;
-    public int Damage = Enemy_StatusManage.Instance.damage;
     public float speed = 5;
+    private int damage = 30;
     
     void FixedUpdate()
     {
@@ -18,7 +18,7 @@ public class EnemyBullet : MonoBehaviour
             player = hit.collider.GetComponent<Player>();
             if (player != null)
             {
-                player.RegisterHit();
+                player.RegisterHit(-damage);
                 Destroy(gameObject);
                 return;
             }
