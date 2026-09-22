@@ -26,21 +26,15 @@ public class Enemy_Range : MonoBehaviour
             Destroy(gameObject);
         }
     }
-public void FixedUpdate()
-    {
-        if (EnemyFov.CanSeePlayer) 
-        {
-                Vector2 direction = (player.position - transform.position).normalized;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
-        }
+//public void FixedUpdate()
+//    {
+//        if (EnemyFov.CanSeePlayer && Time.time >= nextFireTime) 
+//        {
+//            nextFireTime = Time.time + Enemy_StatusManage.Instance.firerate;
+//            Shoot();
+//        }
 
-        if (EnemyFov.CanSeePlayer && Time.time >= nextFireTime)
-        {
-            nextFireTime = Time.time + Enemy_StatusManage.Instance.firerate;
-            Shoot();
-        }
-    }
+//    }
     void Shoot()
     {
         GameObject bullet = Instantiate(bulletPre, firepos.position, transform.rotation);
