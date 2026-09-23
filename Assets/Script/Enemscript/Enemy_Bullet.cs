@@ -18,15 +18,12 @@ public class EnemyBullet : MonoBehaviour
             player = hit.collider.GetComponent<Player>();
             if (player != null)
             {
-                player.RegisterHit(-damage);
+                player.RegisterHit(damage);
                 Destroy(gameObject);
                 return;
             }
-            
 
-            
-           
-            
+            Destroy(gameObject);
         }
     }
 }
