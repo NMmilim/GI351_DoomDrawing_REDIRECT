@@ -19,14 +19,15 @@ public class Enemy_Range : MonoBehaviour
         
         rb = GetComponent<Rigidbody2D>();
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
+       
         Vector2 direction = (player.position - transform.position).normalized;
         transform.right = direction;
         if (Time.time >= nextFireTime) {Shoot();nextFireTime = Time.time + firecooldown; }
         
     }
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnCollisionExit2D(Collision2D collission)
     {
         Vector2 direction = Vector2.zero;
     }
