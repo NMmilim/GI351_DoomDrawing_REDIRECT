@@ -12,25 +12,20 @@ public class Enemy_Range : MonoBehaviour
     public Transform player;
     private float firecooldown = 0.333f;
     private float nextFireTime = 1;
-   
-    public void Start()
+    
+
+
+
+
+
+public void Start()
     {
         hp = 1;
-        
+
         rb = GetComponent<Rigidbody2D>();
     }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-       
-        Vector2 direction = (player.position - transform.position).normalized;
-        transform.right = direction;
-        if (Time.time >= nextFireTime) {Shoot();nextFireTime = Time.time + firecooldown; }
-        
-    }
-    private void OnCollisionExit2D(Collision2D collission)
-    {
-        Vector2 direction = Vector2.zero;
-    }
+
+
     public void RegisterHit()
     {
         hp -= PlayerManagement.Instance.dmg;
@@ -39,6 +34,7 @@ public class Enemy_Range : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
     void Shoot()
     {
         GameObject bullet = Instantiate(bulletPre, firepos.position, transform.rotation);
