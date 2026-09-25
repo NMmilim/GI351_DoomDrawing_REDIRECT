@@ -54,13 +54,13 @@ public class Enemy_Range : MonoBehaviour
     }
     void Shoot()
     {
-        
-        //Vector2 shootDir = ((Vector2)_fov.DetectedPlayer.position - (Vector2)firepos.position).normalized;
 
-        
-        //float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+        Vector2 shootDir = ((Vector2)_fov.DetectedPlayer.position - (Vector2)firepos.position).normalized;
 
-        GameObject bullet = Instantiate(bulletPre, firepos.position, transform.rotation);
+
+        float angle = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+
+        GameObject bullet = Instantiate(bulletPre, firepos.position, Quaternion.Euler(0f, 0f, angle));
         Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
         rbBullet.linearVelocity = transform.right * 10f;
     }
