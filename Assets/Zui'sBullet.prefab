@@ -29,13 +29,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464745323818207289}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: -0.7071068, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.8496865, y: 0.8496865, z: 0.8496865}
+  m_LocalScale: {x: 0.75, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3594689392450274417
 SpriteRenderer:
   serializedVersion: 2
@@ -83,18 +83,18 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: -5780001074484538599, guid: 8b2a441449d37e0458e16df8687ae46d, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8b2a441449d37e0458e16df8687ae46d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.05, y: 0.2}
+  m_Size: {x: 0.044, y: 0.014}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
+  m_SpriteSortPoint: 1
 --- !u!114 &553811074914563469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -233,16 +233,16 @@ TrailRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0
-        value: 0.8496865
-        inSlope: 0
-        outSlope: 0
+        time: 0.0027694702
+        value: 0.03719718
+        inSlope: -0.4271329
+        outSlope: -0.4271329
         tangentMode: 0
         weightedMode: 0
         inWeight: 0.33333334
-        outWeight: 0.33333334
+        outWeight: 0.12352872
       - serializedVersion: 3
-        time: 1
+        time: 0.97506714
         value: 0
         inSlope: 0
         outSlope: 0
