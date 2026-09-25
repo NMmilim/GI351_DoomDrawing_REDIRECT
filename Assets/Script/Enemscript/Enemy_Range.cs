@@ -7,16 +7,20 @@ public class Enemy_Range : MonoBehaviour
     int hp;
     public GameObject bulletPre;
     public Transform firepos;
-    private int firerate;
     public Rigidbody2D rb;
     public Transform player;
-    private float firecooldown = 0.333f;
-    private float nextFireTime = 1;
     
+    private EnemyFOV _fov;
+    [Header("Shooting")]
+private float firecooldown = 0f;
+    public float firerate = 1.5f;
 
 
+    void Awake()
+    {
+        _fov = GetComponentInChildren<EnemyFOV>();
 
-
+    }
 
 public void Start()
     {
@@ -25,7 +29,21 @@ public void Start()
         rb = GetComponent<Rigidbody2D>();
     }
 
+    void Update()
+    {
+        if (firecooldown > 0f)
+        {
+firecooldown -= Time.deltaTime;
 
+        }
+            
+        if (_fov != null && _fov.PlayerInSight && firecooldown <= 0f)
+        {
+            Shoot();
+            firecooldown = firerate;   
+        }
+
+    }
     public void RegisterHit()
     {
         hp -= PlayerManagement.Instance.dmg;
@@ -39,7 +57,7 @@ public void Start()
     {
         GameObject bullet = Instantiate(bulletPre, firepos.position, transform.rotation);
         Rigidbody2D rbBullet = bullet.GetComponent<Rigidbody2D>();
-        rbBullet.linearVelocity = transform.right * 10f;
+        rbBullet.linearVelocity = transform.right * 20f;
         
     }
 

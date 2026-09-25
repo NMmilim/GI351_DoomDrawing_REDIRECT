@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
     {
         PlayerManagement.Instance.hp += amount;
     }
+
    
 }
     
