@@ -6,9 +6,13 @@ public class PlayerManagement : MonoBehaviour
     [Header("Player Status")]
     public int hp;
     public int maxhp;
-    public int dmg;
+    
     public float armor;
     public float speed;
+    [Header("Player Combat stats")]
+    public int dmg;
+    public float cooldown=1;
+   public float nextFireTime=0;
     [Header("Player Upgrades")]
     public float UpgRicochet;
     public float Piercing;

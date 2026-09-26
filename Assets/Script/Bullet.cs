@@ -3,10 +3,10 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public LayerMask collisionMask;
-    
+    public GameObject bloodEffectPrefab;
     public int maxBounce = 1;
     private int bounce = 0;
-    public float speed = 8;
+    public float speed = 20;
     
     
     void FixedUpdate()
@@ -22,10 +22,14 @@ public class Bullet : MonoBehaviour
             Player player = hit.collider.GetComponent<Player>();
             if (enemy != null)
             {
-                enemy.RegisterHit();
-                Destroy(gameObject); 
+                enemy.RegisterHit(PlayerManagement.Instance.dmg);
+                Destroy(gameObject);
+
+                Instantiate(bloodEffectPrefab, hit.point, Quaternion.identity);
                 return;
+
             }
+            
             //if (player != null)
             //{
             //    player.RegisterHit();

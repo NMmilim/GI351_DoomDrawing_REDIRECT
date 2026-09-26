@@ -6,12 +6,7 @@ public class Shooting : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform firepos;
    
-
-   
-   
-
-       
-        void Update()
+        private void Update()
         {
         if (Time.timeScale == 0f) return;
         if (Input.GetMouseButtonDown(0))
@@ -20,7 +15,7 @@ public class Shooting : MonoBehaviour
             }
             void Shooting()
             {
-                GameObject bullet = Instantiate(bulletPrefab, firepos.position, firepos.rotation);
+                GameObject bullet = Instantiate(bulletPrefab, firepos.position, transform.rotation);
             }
 
         }

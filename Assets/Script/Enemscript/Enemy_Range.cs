@@ -44,9 +44,9 @@ public class Enemy_Range : MonoBehaviour
         }
 
     }
-    public void RegisterHit()
+    public void RegisterHit(int amount)
     {
-        hp -= PlayerManagement.Instance.dmg;
+        hp -= amount;
         if (hp <= 0)
         {
             Destroy(gameObject);
