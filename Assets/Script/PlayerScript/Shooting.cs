@@ -15,8 +15,10 @@ public class Shooting : MonoBehaviour
             }
             void Shooting()
             {
-                GameObject bullet = Instantiate(bulletPrefab, firepos.position, transform.rotation);
-            }
+                
+            GameObject bullet = Instantiate(bulletPrefab, firepos.position, transform.rotation);
+            SoundManager.Instance.PlaySound3D("Pistol_Fire", firepos.position);
+        }
 
         }
     

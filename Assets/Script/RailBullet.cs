@@ -15,6 +15,8 @@ public class RailBullet : MonoBehaviour
     public GameObject bloodEffectPrefab;
     void Awake()
     {
+        SoundManager.Instance.PlaySound3D("Railgun_Fire", transform.position);
+
         _rb = GetComponent<Rigidbody2D>();
         _trail = GetComponentInChildren<TrailRenderer>();
     }

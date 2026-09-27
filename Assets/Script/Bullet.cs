@@ -18,12 +18,14 @@ public class Bullet : MonoBehaviour
 
         if (hit.collider != null)
         {
+            SoundManager.Instance.PlaySound3D("Ricochet", transform.position);
             Enemy_Range enemy = hit.collider.GetComponent<Enemy_Range>();
             Player player = hit.collider.GetComponent<Player>();
-            if (enemy != null) { 
+            if (enemy != null) {
 
                 enemy.RegisterHit(PlayerManagement.Instance.dmg);
                 Destroy(gameObject);
+                SoundManager.Instance.PlaySound3D("BulletImpactFlesh", transform.position);
 
                 Instantiate(bloodEffectPrefab, hit.point, Quaternion.identity); 
                 int index = Random.Range(0, bloodDecals.Length);
@@ -46,6 +48,7 @@ public class Bullet : MonoBehaviour
             bounce++;
             if (bounce >= maxBounce)
             {
+                SoundManager.Instance.PlaySound3D("BulletImpact", transform.position);
                 Destroy(gameObject);
             }
         }
