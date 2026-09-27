@@ -11,7 +11,8 @@ public class RailBullet : MonoBehaviour
     private int _pierceCount = 0;
     private Rigidbody2D _rb;
     private TrailRenderer _trail;
-
+    public GameObject[] bloodDecals;
+    public GameObject bloodEffectPrefab;
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
@@ -39,6 +40,9 @@ public class RailBullet : MonoBehaviour
         {
             if (enemy != null)
                 enemy.RegisterHit(PlayerManagement.Instance.dmg * 2);
+            Instantiate(bloodEffectPrefab, hit.point, Quaternion.identity);
+            int index = Random.Range(0, bloodDecals.Length);
+            Instantiate(bloodDecals[index], hit.point, Quaternion.identity);
 
             StopAndDestroy();
             return;    // never falls through to pierce logic

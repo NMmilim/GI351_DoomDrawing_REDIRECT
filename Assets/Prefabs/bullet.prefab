@@ -186,5 +186,10 @@ MonoBehaviour:
   collisionMask:
     serializedVersion: 2
     m_Bits: 128
+  bloodEffectPrefab: {fileID: 7346654079416602471, guid: aaa0e3e898885b84ab260c886b8c7fa5, type: 3}
   maxBounce: 1
   speed: 8
+  bloodDecals:
+  - {fileID: 100000, guid: cfc7596704bbd7f489156fcd4c05c7e9, type: 3}
+  - {fileID: 100000, guid: 18a11fd6df8ceb449b8785301026d639, type: 3}
+  - {fileID: 100000, guid: 358b75ea5451cf143ab19029a189097d, type: 3}

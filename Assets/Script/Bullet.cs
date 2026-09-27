@@ -7,8 +7,8 @@ public class Bullet : MonoBehaviour
     public int maxBounce = 1;
     private int bounce = 0;
     public float speed = 20;
-    
-    
+    public GameObject[] bloodDecals;
+
     void FixedUpdate()
     {
         
@@ -20,19 +20,21 @@ public class Bullet : MonoBehaviour
         {
             Enemy_Range enemy = hit.collider.GetComponent<Enemy_Range>();
             Player player = hit.collider.GetComponent<Player>();
-            if (enemy != null)
-            {
+            if (enemy != null) { 
+
                 enemy.RegisterHit(PlayerManagement.Instance.dmg);
                 Destroy(gameObject);
 
-                Instantiate(bloodEffectPrefab, hit.point, Quaternion.identity);
+                Instantiate(bloodEffectPrefab, hit.point, Quaternion.identity); 
+                int index = Random.Range(0, bloodDecals.Length);
+                Instantiate(bloodDecals[index], hit.point, Quaternion.identity);
                 return;
 
             }
             
             //if (player != null)
             //{
-            //    player.RegisterHit();
+            //    player.RegisterHit();hj
             //    Destroy(gameObject);
             //    return;
             //}

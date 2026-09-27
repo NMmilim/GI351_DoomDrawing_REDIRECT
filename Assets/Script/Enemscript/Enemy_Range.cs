@@ -1,4 +1,5 @@
 using Unity.AppUI.UI;
+using Unity.Burst.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -46,6 +47,8 @@ public class Enemy_Range : MonoBehaviour
     }
     public void RegisterHit(int amount)
     {
+       
+
         hp -= amount;
         if (hp <= 0)
         {
