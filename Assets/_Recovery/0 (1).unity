@@ -1488,10 +1488,6 @@ PrefabInstance:
       propertyPath: crossFade
       value: 
       objectReference: {fileID: 36995453}
-    - target: {fileID: 1938851506041816595, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}
-      propertyPath: m_Interactable
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 2429597078900313090, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}
       propertyPath: m_Name
       value: LevelManager
@@ -1502,18 +1498,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2621479564678169271, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}
       propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2745519642488720386, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}
-      propertyPath: m_Alpha
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2745519642488720386, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}
       propertyPath: m_Interactable
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2745519642488720386, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}
-      propertyPath: m_BlocksRaycasts
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3104946542982599897, guid: 0f8e476539da6684384f2d58f6af8302, type: 3}

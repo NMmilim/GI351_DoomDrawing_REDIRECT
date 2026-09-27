@@ -7,12 +7,12 @@ public class MainMenu : MonoBehaviour
 {
     public void Play()
     {
-        SceneManager.LoadScene("MainGame");
+        LevelManager.Instance.LoadScene("MainGame", "CrossFade");
     }
 
     public void Tutorial()
     {
-        SceneManager.LoadScene("tutorial");
+        LevelManager.Instance.LoadScene("tutorial", "CrossFade");
     }
 
     public void Quit()
