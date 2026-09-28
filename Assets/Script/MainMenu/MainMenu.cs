@@ -12,7 +12,7 @@ public class MainMenu : MonoBehaviour
     private void Start()
     {
         LoadVolume();
-        MusicManager.Instance.PlayMusic("Placeholder"); //test  
+        MusicManager.Instance.PlayMusic("MainMenu"); //test  
     }
     public void Play()
     {

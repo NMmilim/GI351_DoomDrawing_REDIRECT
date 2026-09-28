@@ -233,6 +233,8 @@ MonoBehaviour:
   tracks:
   - trackName: Placeholder
     clip: {fileID: 8300000, guid: 0a6d93a6cef105647a46ab7830e1c0ce, type: 3}
+  - trackName: MainMenu
+    clip: {fileID: 8300000, guid: a80c35d5c9f09b3408186a59f8661ae2, type: 3}
 --- !u!114 &7564196662603121603
 MonoBehaviour:
   m_ObjectHideFlags: 0
