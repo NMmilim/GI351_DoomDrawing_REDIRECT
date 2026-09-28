@@ -21,19 +21,19 @@ public class Bullet : MonoBehaviour
             SoundManager.Instance.PlaySound3D("Ricochet", transform.position);
             Enemy_Range enemy = hit.collider.GetComponent<Enemy_Range>();
             Player player = hit.collider.GetComponent<Player>();
-            if (enemy != null) {
-
+            if (enemy != null)
+            {
                 enemy.RegisterHit(PlayerManagement.Instance.dmg);
-                Destroy(gameObject);
                 SoundManager.Instance.PlaySound3D("BulletImpactFlesh", transform.position);
-
-                Instantiate(bloodEffectPrefab, hit.point, Quaternion.identity); 
+                
+                Quaternion randomRot = Quaternion.Euler(0, 0, Random.Range(0f, 360f));
+                Instantiate(bloodEffectPrefab, hit.point, randomRot);
                 int index = Random.Range(0, bloodDecals.Length);
-                Instantiate(bloodDecals[index], hit.point, Quaternion.identity);
+                Instantiate(bloodDecals[index], hit.point, randomRot);
+                Destroy(gameObject);
                 return;
-
             }
-            
+
             //if (player != null)
             //{
             //    player.RegisterHit();hj
