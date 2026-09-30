@@ -303,7 +303,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 136
   bloodEffectPrefab: {fileID: 7346654079416602471, guid: aaa0e3e898885b84ab260c886b8c7fa5, type: 3}
-  maxBounce: 4
+  maxBounce: 2
   speed: 50
   bloodDecals:
   - {fileID: 100000, guid: 358b75ea5451cf143ab19029a189097d, type: 3}
