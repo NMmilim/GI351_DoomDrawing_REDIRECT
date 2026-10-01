@@ -360,6 +360,7 @@ GameObject:
   - component: {fileID: 7635641937253257758}
   - component: {fileID: 2835674974273019896}
   - component: {fileID: 2619466286974897794}
+  - component: {fileID: 1493120940078754871}
   m_Layer: 7
   m_Name: Enemy_Range
   m_TagString: Enemy
@@ -452,7 +453,7 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7436703267435534738}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
@@ -469,7 +470,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &2835674974273019896
 BoxCollider2D:
@@ -534,7 +535,7 @@ MonoBehaviour:
   bloodSplatPrefab: {fileID: 100000, guid: 358b75ea5451cf143ab19029a189097d, type: 3}
   maxHp: 3
   moveSpeed: 3
-  searchSpeed: 1.2
+  roamSpeed: 1.2
   arrivalThreshold: 0.3
   peekOffset: 1.2
   burstCount: 3
@@ -542,10 +543,37 @@ MonoBehaviour:
   peekTimeout: 2.5
   coverWaitMin: 1
   coverWaitMax: 3
-  searchTimeout: 8
   aimRotationSpeed: 240
+  noticingTime: 0.6
+  lostSightRoamDelay: 20
+  spawnRoamDelay: 10
+  alertBroadcastRadius: 15
+  roamWaypointPause: 1.5
+  roamWaypointRadius: 8
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
   splatsPerHit: 3
   splatRadius: 0.6
+--- !u!195 &1493120940078754871
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7436703267435534738}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 0.3
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4

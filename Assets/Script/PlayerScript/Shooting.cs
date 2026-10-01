@@ -11,7 +11,7 @@ public class Shooting : MonoBehaviour
     [SerializeField] private float peakIntensity = 8f;
     [SerializeField] private float flashDuration = 0.08f;
 
-    public Transform firepos;
+           public Transform firepos;
     private Coroutine _flashCoroutine;
     private void Update()
     {

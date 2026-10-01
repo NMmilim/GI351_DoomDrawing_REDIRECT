@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;   // NavMesh.SamplePosition
 
 /// <summary>
 /// Wave-based enemy spawner for top-down 2D games.
@@ -183,6 +184,15 @@ public class EnemySpawner : MonoBehaviour
         // Random position within spawnRadius
         Vector2 offset   = Random.insideUnitCircle * spawnRadius;
         Vector3 spawnPos = transform.position + new Vector3(offset.x, offset.y, 0f);
+
+        // Snap to the nearest valid NavMesh point so the NavMeshAgent
+        // never fails with "no valid NavMesh" on spawn.
+        // Search within spawnRadius + 2 units for a walkable point.
+        if (NavMesh.SamplePosition(spawnPos, out NavMeshHit hit, spawnRadius + 2f, NavMesh.AllAreas))
+            spawnPos = hit.position;
+        else
+            Debug.LogWarning($"[EnemySpawner] '{name}': Could not find a NavMesh point near spawn position. " +
+                              "Ensure the NavMesh is baked and the spawner is inside the walkable area.");
 
         GameObject enemy = Instantiate(prefab, spawnPos, Quaternion.identity);
         _spawnedEnemies.Add(enemy);

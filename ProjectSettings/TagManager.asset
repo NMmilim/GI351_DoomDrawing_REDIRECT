@@ -18,7 +18,7 @@ TagManager:
   - Enemy
   - Bullet
   - Detection
-  - 
+  - NavMeshWalkable
   - 
   - 
   - 
