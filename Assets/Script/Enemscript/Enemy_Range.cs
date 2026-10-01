@@ -1,61 +1,54 @@
-using System.Collections;
 using UnityEngine;
-using UnityEngine.AI;   // NavMesh
+using Pathfinding;   // A* Pathfinding Project
 
 /// <summary>
-/// Ranged enemy AI — cover-seek, peek-and-fire, roam, and alert-broadcast behaviour.
+/// Ranged enemy AI using A* Pathfinding Project (AIPath) for 2D top-down movement.
 ///
-/// ══════════════════════════════════════════════════════════════════
-///  WHY NavMeshAgent?
-///   Direct Rigidbody movement (linearVelocity) worked for open floors, but it
-///   ignores the navigation mesh, so enemies walked straight through walls or
-///   got permanently stuck in corners — exactly the "facing through walls" bug.
-///   NavMeshAgent path-finds around obstacles automatically, respects wall
-///   geometry, handles moving between rooms, and is the Unity-recommended
-///   solution for character locomotion.
+/// WHY A* PATHFINDING PROJECT instead of Unity NavMesh?
+///   Unity's built-in NavMesh is a 3D system. It cannot read Collider2D components,
+///   so 2D walls are invisible to the baker regardless of any tricks applied.
+///   A* Pathfinding Project has native 2D support — it reads Collider2D directly,
+///   wall obstacles are detected automatically, and no 3D workarounds are needed.
 ///
-///   For 2D top-down games, the NavMesh still works — you bake it from a
-///   3D perspective (XZ plane) with the scene geometry included, or use the
-///   NavMeshSurface component from the AI Navigation package to bake at runtime.
-///   The agent moves in XZ; the transform is then locked to Z=0 (or Y=0)
-///   to stay in the 2D plane.  See SETUP REQUIREMENTS below.
-/// ══════════════════════════════════════════════════════════════════
-///
-/// DETECTION MODEL
-///   Enemies have NO knowledge of the player's position by default.
-///   "Detection" requires an unobstructed FOV raycast (EnemyFOV / HasClearShot).
-///   Once the player is detected, the detecting enemy broadcasts the last-known
-///   position to all nearby allies.
+/// REQUIRED PACKAGE
+///   Download the free version at: https://arongranberg.com/astar
+///   Import the .unitypackage, then add an AstarPath component to a scene object
+///   and configure a Grid Graph (see SETUP REQUIREMENTS below).
 ///
 /// STATE MACHINE
-///   SeekCover   - Path to the nearest unclaimed CoverPoint on spawn / after alert.
-///   InCover     - Wait behind cover; FOV hidden. After timer -> Peeking.
-///   Peeking     - Stepped out from cover. Sub-phases:
-///                  1. Walk to peek spot.
-///                  2. Noticing: brief delay before firing when player is spotted.
-///                  3. Firing burst.
-///                  When burst done -> Returning.
-///   Returning   - Walk back to cover position -> InCover.
-///   Roaming     - Slow walk, sweeping the map for the player.
-///                  Triggered after lostSightRoamDelay s of losing sight, OR
-///                  within spawnRoamDelay s of spawn if player is never detected.
+///   SeekCover    - Path to the nearest unclaimed CoverPoint.
+///   InCover      - Wait behind cover; FOV hidden. After timer -> Peeking.
+///   Peeking      - Step out from cover.
+///                   Phase 1: Walk to peek position.
+///                   Phase 2: Noticing delay (noticingTime of clear LOS before firing).
+///                   Phase 3: Fire burst. On burst complete -> Returning.
+///   Returning    - Walk back to cover -> InCover.
+///   Roaming      - Slow walk, sweeping the map. Triggered after lostSightRoamDelay
+///                  seconds of no LOS, or spawnRoamDelay seconds after spawn with
+///                  no detection at all.
 ///
 /// SETUP REQUIREMENTS
-///   * Script on the enemy root GameObject.
-///   * NavMeshAgent component on the same GameObject (RequireComponent enforces this).
-///     - For 2D: import the "AI Navigation" package (com.unity.ai.navigation),
-///       add a NavMeshSurface to your scene, set Agent Type to "Humanoid" or a
-///       custom agent, then click Bake. For a top-down 2D scene, use a very
-///       small agent height (e.g. 0.1 m) so the flat geometry is included.
-///     - Agent speed, stopping distance and angular speed are controlled at runtime
-///       by this script — you do NOT need to set them on the component.
-///   * Child GameObject with EnemyFOV (auto-found, optional).
-///   * Assign bulletPre, firepos, bloodSplatPrefab in the Inspector.
-///   * Player tag must be "Player".
-///   * Place CoverPoint components at wall/prop edges in the scene.
-///   * obstacleMask should include your Wall/Obstruction layer.
+///   Scene:
+///     1. Create empty GameObject "Pathfinder".
+///     2. Add Component: AstarPath.
+///     3. Graphs -> + -> Grid Graph.
+///        - Width/Depth: cover your whole map (e.g. 40 x 40).
+///        - Node Size: 0.5 (smaller = more accurate).
+///        - Use 2D Physics: checked.
+///        - Obstacle Layer Mask: Wall (your wall layer).
+///     4. Click Scan. Open space = blue nodes, walls = red/no nodes.
+///
+///   Enemy Prefab:
+///     - AIPath component (Add Component -> Pathfinding -> AIPath).
+///       Set: Enable Rotation = false, Gravity = 0.
+///     - Seeker component (auto-added with AIPath).
+///     - Enemy_Range component (this script).
+///     - EnemyFOV on a child GameObject (optional, but recommended).
+///     - Assign bulletPre, firepos, bloodSplatPrefab in Inspector.
+///     - Player tag must be "Player".
 /// </summary>
-[RequireComponent(typeof(NavMeshAgent))]
+[RequireComponent(typeof(AIPath))]
+[RequireComponent(typeof(Seeker))]
 public class Enemy_Range : MonoBehaviour
 {
     // -----------------------------------------------------------------
@@ -69,7 +62,7 @@ public class Enemy_Range : MonoBehaviour
     [Tooltip("Muzzle / fire position.")]
     public Transform firepos;
 
-    [Tooltip("Blood splat prefab (Bloodsplat.prefab).")]
+    [Tooltip("Blood splat prefab.")]
     public GameObject bloodSplatPrefab;
 
     // -----------------------------------------------------------------
@@ -84,14 +77,13 @@ public class Enemy_Range : MonoBehaviour
     // -----------------------------------------------------------------
 
     [Header("Movement")]
-    [Tooltip("NavMesh speed when running to cover or closing in.")]
+    [Tooltip("Speed when running to cover or the peek position.")]
     public float moveSpeed = 3f;
 
-    [Tooltip("Separate slower NavMesh speed used during the Roaming state. " +
-             "Simulates a cautious walking pace. Adjustable here in the Inspector.")]
+    [Tooltip("Slower speed used only during Roaming state — simulates cautious walking.")]
     public float roamSpeed = 1.2f;
 
-    [Tooltip("Distance threshold to consider 'arrived' at a position.")]
+    [Tooltip("Distance threshold to consider 'arrived' at a destination.")]
     public float arrivalThreshold = 0.35f;
 
     // -----------------------------------------------------------------
@@ -102,15 +94,14 @@ public class Enemy_Range : MonoBehaviour
     [Tooltip("How far the enemy steps out from the cover position toward the player.")]
     public float peekOffset = 1.2f;
 
-    [Tooltip("Number of shots to fire per peek before retreating.")]
+    [Tooltip("Number of shots per peek burst before retreating.")]
     [Range(1, 8)]
     public int burstCount = 3;
 
     [Tooltip("Seconds between each shot in the burst.")]
     public float firerate = 0.6f;
 
-    [Tooltip("How long the enemy waits at the peek position for a clear shot " +
-             "before retreating.")]
+    [Tooltip("Maximum seconds to wait at peek position for a clear shot before retreating.")]
     public float peekTimeout = 2.5f;
 
     [Tooltip("Minimum seconds to wait in cover before peeking again.")]
@@ -119,7 +110,7 @@ public class Enemy_Range : MonoBehaviour
     [Tooltip("Maximum seconds to wait in cover before peeking again.")]
     public float coverWaitMax = 3.0f;
 
-    [Tooltip("Degrees per second the body rotates to face the aim direction.")]
+    [Tooltip("Degrees per second the body rotates toward the aim direction.")]
     public float aimRotationSpeed = 240f;
 
     // -----------------------------------------------------------------
@@ -127,20 +118,16 @@ public class Enemy_Range : MonoBehaviour
     // -----------------------------------------------------------------
 
     [Header("Detection / Noticing")]
-    [Tooltip("Seconds of clear line-of-sight required before the enemy actually " +
-             "reacts (the noticing delay). During this window it does NOT shoot.")]
+    [Tooltip("Seconds of continuous clear LOS required before the enemy reacts and fires.")]
     public float noticingTime = 0.6f;
 
-    [Tooltip("Seconds after losing sight of the player before the enemy " +
-             "enters the Roaming state.")]
+    [Tooltip("Seconds of lost LOS before switching to Roaming.")]
     public float lostSightRoamDelay = 20f;
 
-    [Tooltip("If the player is not detected within this many seconds of spawn, " +
-             "the enemy enters the Roaming state immediately.")]
+    [Tooltip("Seconds after spawn without any detection before starting to Roam.")]
     public float spawnRoamDelay = 10f;
 
-    [Tooltip("Radius (world units) within which this enemy broadcasts " +
-             "a detected player location to allies.")]
+    [Tooltip("Radius (world units) in which detected player location is broadcast to allies.")]
     public float alertBroadcastRadius = 15f;
 
     // -----------------------------------------------------------------
@@ -148,11 +135,10 @@ public class Enemy_Range : MonoBehaviour
     // -----------------------------------------------------------------
 
     [Header("Roaming")]
-    [Tooltip("How long the enemy pauses at each roam waypoint before picking a new one.")]
+    [Tooltip("How long the enemy pauses at each roam waypoint.")]
     public float roamWaypointPause = 1.5f;
 
-    [Tooltip("Maximum distance from the enemy's position when picking a random " +
-             "roam waypoint on the NavMesh.")]
+    [Tooltip("Max distance for picking a random roam waypoint.")]
     public float roamWaypointRadius = 8f;
 
     // -----------------------------------------------------------------
@@ -160,7 +146,7 @@ public class Enemy_Range : MonoBehaviour
     // -----------------------------------------------------------------
 
     [Header("Combat")]
-    [Tooltip("Layer(s) that block bullets — used for the clear-shot raycast.")]
+    [Tooltip("Layers that block bullets — used for the clear-shot raycast.")]
     public LayerMask obstacleMask;
 
     // -----------------------------------------------------------------
@@ -173,78 +159,73 @@ public class Enemy_Range : MonoBehaviour
     public float splatRadius = 0.6f;
 
     // -----------------------------------------------------------------
-    //  Private - State Machine
+    //  State Machine
     // -----------------------------------------------------------------
 
     private enum State
     {
-        SeekCover,   // Pathing to a CoverPoint
-        InCover,     // Waiting behind cover
-        Peeking,     // Stepped out — noticing phase then firing burst
-        Returning,   // Walking back to cover after a peek
-        Roaming      // Slow cautious sweep when player is lost / not yet seen
+        SeekCover,
+        InCover,
+        Peeking,
+        Returning,
+        Roaming
     }
 
     private State _state = State.SeekCover;
 
     // -----------------------------------------------------------------
-    //  Private - References & Core
+    //  Private - References
     // -----------------------------------------------------------------
 
-    private int          _hp;
-    private NavMeshAgent _agent;
-    private EnemyFOV     _fov;
-    private Transform    _player;
+    private int      _hp;
+    private AIPath   _ai;
+    private EnemyFOV _fov;
+    private Transform _player;
 
     // -----------------------------------------------------------------
-    //  Private - Timers & Counters
+    //  Private - Timers
     // -----------------------------------------------------------------
 
-    private float _stateTimer;         // general countdown for current state
-    private float _fireCooldown;       // time between individual shots
-    private float _seekCoverTimer;     // prevents getting stuck seeking cover
-    private float _noticingTimer;      // cumulative clear-LOS time while at peek spot
-    private float _lostSightTimer;     // counts up after losing clear LOS
-    private float _spawnTimer;         // counts up from spawn; triggers roam if no detection
-    private float _roamWaypointTimer;  // pause timer at each roam waypoint
+    private float _stateTimer;
+    private float _fireCooldown;
+    private float _seekCoverTimer;
+    private float _noticingTimer;
+    private float _lostSightTimer;
+    private float _spawnTimer;
+    private float _roamWaypointTimer;
 
     // -----------------------------------------------------------------
     //  Private - Cover & Peek
     // -----------------------------------------------------------------
 
     private CoverPoint _currentCover;
-    private Vector3    _coverPosition;   // world pos of claimed cover slot
-    private Vector3    _peekPosition;    // world pos enemy steps out to
-    private bool       _atPeekPosition;  // true once the enemy has walked to peekPosition
-    private int        _shotsThisPeek;   // shots fired in the current peek burst
-    private bool       _noticed;         // true once noticing delay completed this peek
+    private Vector3    _coverPosition;
+    private Vector3    _peekPosition;
+    private bool       _atPeekPosition;
+    private int        _shotsThisPeek;
+    private bool       _noticed;
 
     // -----------------------------------------------------------------
     //  Private - Player Memory
     // -----------------------------------------------------------------
 
-    private bool    _playerEverSeen;  // true once any clear LOS was confirmed (or ally alert received)
-    private Vector3 _playerLastKnown; // last world position with confirmed LOS
-    private bool    _haveLastKnown;   // prevents using Vector3.zero as a valid last-known
+    private bool    _playerEverSeen;
+    private Vector3 _playerLastKnown;
+    private bool    _haveLastKnown;
 
     // -----------------------------------------------------------------
-    //  Private - Spawn Roam gate
+    //  Private - Spawn gate
     // -----------------------------------------------------------------
 
-    private bool _spawnRoamTriggered; // only fire the spawn->roam transition once
+    private bool _spawnRoamTriggered;
 
     // -----------------------------------------------------------------
     //  Static - Team Alert
-    //  When any enemy fires / detects, all teammates in InCover skip their
-    //  wait timer and peek immediately.
     // -----------------------------------------------------------------
 
     private static float _teamAlertTimer = 0f;
 
-    private static void BroadcastTeamAlert()
-    {
-        _teamAlertTimer = 6f;
-    }
+    private static void BroadcastTeamAlert() => _teamAlertTimer = 6f;
 
     private static bool TeamIsAlerted => _teamAlertTimer > 0f;
 
@@ -254,13 +235,13 @@ public class Enemy_Range : MonoBehaviour
 
     private void Awake()
     {
-        _agent = GetComponent<NavMeshAgent>();
-        _fov   = GetComponentInChildren<EnemyFOV>();
+        _ai  = GetComponent<AIPath>();
+        _fov = GetComponentInChildren<EnemyFOV>();
 
-        // 2D NavMesh setup — disable the agent's built-in rotation and Y-axis
-        // correction so we can handle rotation ourselves and stay on the XY plane.
-        _agent.updateRotation = false;
-        _agent.updateUpAxis   = false;
+        // 2D configuration for AIPath
+        _ai.enableRotation = false;   // we rotate the body ourselves
+        _ai.gravity        = Vector3.zero;
+        _ai.orientation    = OrientationMode.YAxisForward;
     }
 
     private void Start()
@@ -275,14 +256,13 @@ public class Enemy_Range : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning($"[Enemy_Range] '{name}': No GameObject with tag 'Player' found!");
+            Debug.LogWarning($"[Enemy_Range] '{name}': No 'Player' tagged object found.");
         }
 
         _spawnTimer         = 0f;
         _spawnRoamTriggered = false;
         _lostSightTimer     = 0f;
 
-        // Stagger so multiple enemies don't all act simultaneously
         Invoke(nameof(EnterSeekCover), Random.Range(0f, 0.5f));
     }
 
@@ -290,14 +270,10 @@ public class Enemy_Range : MonoBehaviour
     {
         if (_player == null) return;
 
-        // Tick global team-alert countdown
-        if (_teamAlertTimer > 0f)
-            _teamAlertTimer -= Time.deltaTime;
-        if (_fireCooldown > 0f)
-            _fireCooldown -= Time.deltaTime;
+        if (_teamAlertTimer > 0f)  _teamAlertTimer  -= Time.deltaTime;
+        if (_fireCooldown   > 0f)  _fireCooldown    -= Time.deltaTime;
 
         // ---- Spawn-roam gate ---------------------------------------
-        // If no detection within spawnRoamDelay seconds of spawning, go roam.
         if (!_spawnRoamTriggered && !_playerEverSeen)
         {
             _spawnTimer += Time.deltaTime;
@@ -310,14 +286,10 @@ public class Enemy_Range : MonoBehaviour
         }
 
         // ---- Lost-sight-roam gate ----------------------------------
-        // After detection, count up when we have no clear shot.
-        // After lostSightRoamDelay, switch to roaming.
         if (_playerEverSeen && _state != State.Roaming)
         {
             if (HasClearShot())
-            {
                 _lostSightTimer = 0f;
-            }
             else
             {
                 _lostSightTimer += Time.deltaTime;
@@ -344,13 +316,12 @@ public class Enemy_Range : MonoBehaviour
 
     // -----------------------------------------------------------------
     //  State: SeekCover
-    //  Find nearest unclaimed CoverPoint and path to it via NavMesh.
     // -----------------------------------------------------------------
 
     private void EnterSeekCover()
     {
         _state          = State.SeekCover;
-        _seekCoverTimer = 3.5f;
+        _seekCoverTimer = 4f;
 
         if (_currentCover != null) { _currentCover.Release(this); _currentCover = null; }
 
@@ -363,38 +334,28 @@ public class Enemy_Range : MonoBehaviour
         }
         else
         {
-            // No cover available — fight from current position
             _coverPosition = transform.position;
             EnterInCover();
             return;
         }
 
-        SetAgentSpeed(moveSpeed);
-        SetAgentDestination(_coverPosition);
+        SetSpeed(moveSpeed);
+        SetDestination(_coverPosition);
     }
 
     private void TickSeekCover()
     {
         _seekCoverTimer -= Time.deltaTime;
-        if (_seekCoverTimer <= 0f)
+        if (_seekCoverTimer <= 0f || HasArrived())
         {
-            StopAgent();
-            _coverPosition = transform.position;
-            if (_currentCover != null) { _currentCover.Release(this); _currentCover = null; }
-            EnterInCover();
-            return;
-        }
-
-        if (HasAgentArrived())
-        {
-            StopAgent();
+            StopMoving();
+            if (_seekCoverTimer <= 0f) _coverPosition = transform.position;
             EnterInCover();
         }
     }
 
     // -----------------------------------------------------------------
     //  State: InCover
-    //  Wait behind cover. After timer (or team alert) -> peek.
     // -----------------------------------------------------------------
 
     private void EnterInCover()
@@ -402,7 +363,7 @@ public class Enemy_Range : MonoBehaviour
         _state      = State.InCover;
         _stateTimer = Random.Range(coverWaitMin, coverWaitMax);
 
-        StopAgent();
+        StopMoving();
         SetFOVVisible(false);
 
         _noticingTimer  = 0f;
@@ -418,10 +379,9 @@ public class Enemy_Range : MonoBehaviour
 
     // -----------------------------------------------------------------
     //  State: Peeking
-    //  Phase 1 — Walk to peek position.
-    //  Phase 2 — Noticing delay (see player continuously for noticingTime).
-    //  Phase 3 — Fire burst.
-    //  On timeout -> Returning.
+    //  Phase 1 - Walk to peek spot.
+    //  Phase 2 - Noticing delay (noticingTime of clear LOS before firing).
+    //  Phase 3 - Fire burst.
     // -----------------------------------------------------------------
 
     private void EnterPeeking()
@@ -433,13 +393,12 @@ public class Enemy_Range : MonoBehaviour
         _noticingTimer  = 0f;
         _noticed        = false;
 
-        // Step out from cover toward last-known / live player position
         Vector3 target   = _haveLastKnown ? _playerLastKnown : _player.position;
         Vector3 dir      = (target - _coverPosition).normalized;
         _peekPosition    = _coverPosition + dir * peekOffset;
 
-        SetAgentSpeed(moveSpeed);
-        SetAgentDestination(_peekPosition);
+        SetSpeed(moveSpeed);
+        SetDestination(_peekPosition);
         SetFOVVisible(true);
     }
 
@@ -447,15 +406,15 @@ public class Enemy_Range : MonoBehaviour
     {
         _stateTimer -= Time.deltaTime;
 
-        // ---- Phase 1: Walk to peek position -----------------------
+        // Phase 1: walk to peek spot
         if (!_atPeekPosition)
         {
-            if (!HasAgentArrived()) return; // still walking
-            StopAgent();
+            if (!HasArrived()) return;
+            StopMoving();
             _atPeekPosition = true;
         }
 
-        // ---- Phase 2: Noticing delay before first shot ------------
+        // Phase 2: noticing delay
         if (!_noticed)
         {
             if (HasClearShot())
@@ -463,8 +422,7 @@ public class Enemy_Range : MonoBehaviour
                 _noticingTimer += Time.deltaTime;
                 if (_noticingTimer >= noticingTime)
                 {
-                    _noticed = true;
-                    // Commit detection — record last known and alert allies
+                    _noticed         = true;
                     _playerLastKnown = _player.position;
                     _playerEverSeen  = true;
                     _haveLastKnown   = true;
@@ -472,24 +430,21 @@ public class Enemy_Range : MonoBehaviour
                     BroadcastTeamAlert();
                     _spawnRoamTriggered = true;
                     _lostSightTimer     = 0f;
-                    // Fire first shot immediately
                     TakeShot();
                 }
-                // Else: still in noticing window — wait, do not fire
             }
             else
             {
-                _noticingTimer = 0f; // lost LOS during noticing — reset
+                _noticingTimer = 0f;
             }
         }
         else
         {
-            // ---- Phase 3: Fire burst -------------------------------
+            // Phase 3: fire burst
             if (_fireCooldown <= 0f && CanFire())
             {
                 _playerLastKnown = _player.position;
                 TakeShot();
-
                 if (_shotsThisPeek >= burstCount)
                 {
                     EnterReturning();
@@ -498,44 +453,38 @@ public class Enemy_Range : MonoBehaviour
             }
         }
 
-        // ---- Peek timeout -----------------------------------------
+        // Timeout
         if (_stateTimer <= 0f)
         {
-            if (_haveLastKnown)
-                ShootAt(_playerLastKnown); // speculative suppressive shot
+            if (_haveLastKnown) ShootAt(_playerLastKnown);
             EnterReturning();
         }
     }
 
     // -----------------------------------------------------------------
     //  State: Returning
-    //  Walk back to cover. FOV hidden.
     // -----------------------------------------------------------------
 
     private void EnterReturning()
     {
         _state = State.Returning;
-        StopAgent();
+        StopMoving();
         SetFOVVisible(false);
-        SetAgentSpeed(moveSpeed);
-        SetAgentDestination(_coverPosition);
+        SetSpeed(moveSpeed);
+        SetDestination(_coverPosition);
     }
 
     private void TickReturning()
     {
-        if (HasAgentArrived())
+        if (HasArrived())
         {
-            StopAgent();
+            StopMoving();
             EnterInCover();
         }
     }
 
     // -----------------------------------------------------------------
     //  State: Roaming
-    //  Slow cautious walk — sweeps the map for the player.
-    //  Triggered after lostSightRoamDelay s without sight,
-    //  OR spawnRoamDelay s after spawn with no detection.
-    //  Spotting the player -> SeekCover (tactical response).
     // -----------------------------------------------------------------
 
     private void EnterRoaming()
@@ -544,16 +493,14 @@ public class Enemy_Range : MonoBehaviour
         _roamWaypointTimer = 0f;
         _lostSightTimer    = 0f;
 
-        StopAgent();
+        StopMoving();
         SetFOVVisible(true);
-        SetAgentSpeed(roamSpeed);
-
+        SetSpeed(roamSpeed);
         PickRoamWaypoint();
     }
 
     private void TickRoaming()
     {
-        // If we spot the player while roaming -> seek cover tactically
         if (HasClearShot())
         {
             _playerLastKnown    = _player.position;
@@ -561,18 +508,16 @@ public class Enemy_Range : MonoBehaviour
             _haveLastKnown      = true;
             _spawnRoamTriggered = true;
             _lostSightTimer     = 0f;
-
             AlertNearbyAllies(_playerLastKnown);
             BroadcastTeamAlert();
-
-            StopAgent();
+            StopMoving();
             EnterSeekCover();
             return;
         }
 
-        if (HasAgentArrived())
+        if (HasArrived())
         {
-            StopAgent();
+            StopMoving();
             _roamWaypointTimer += Time.deltaTime;
             if (_roamWaypointTimer >= roamWaypointPause)
             {
@@ -582,30 +527,19 @@ public class Enemy_Range : MonoBehaviour
         }
     }
 
-    /// <summary>Pick a random reachable NavMesh point and set it as destination.</summary>
     private void PickRoamWaypoint()
     {
-        Vector3 randomDir = Random.insideUnitSphere * roamWaypointRadius;
-        randomDir.z = 0f;
-        randomDir += transform.position;
-
-        if (NavMesh.SamplePosition(randomDir, out NavMeshHit hit, roamWaypointRadius, NavMesh.AllAreas))
-        {
-            SetAgentSpeed(roamSpeed);
-            SetAgentDestination(hit.position);
-        }
-        // No valid point found — try again on next pause cycle
+        // A* handles validity automatically — just pick a random nearby point.
+        Vector2 rand   = Random.insideUnitCircle * roamWaypointRadius;
+        Vector3 target = transform.position + new Vector3(rand.x, rand.y, 0f);
+        SetSpeed(roamSpeed);
+        SetDestination(target);
     }
 
     // -----------------------------------------------------------------
     //  Alert Broadcast
     // -----------------------------------------------------------------
 
-    /// <summary>
-    /// Notifies all Enemy_Range instances within alertBroadcastRadius of the
-    /// player's last-known position. Allies update their own last-known and
-    /// react immediately if in InCover or Roaming.
-    /// </summary>
     private void AlertNearbyAllies(Vector3 playerPos)
     {
         Enemy_Range[] all = FindObjectsByType<Enemy_Range>(FindObjectsSortMode.None);
@@ -618,10 +552,7 @@ public class Enemy_Range : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Called by a teammate who has detected the player.
-    /// Updates last-known position and causes idle enemies to react immediately.
-    /// </summary>
+    /// <summary>Called by a teammate who detected the player.</summary>
     public void ReceiveAlert(Vector3 knownPlayerPos)
     {
         _playerLastKnown    = knownPlayerPos;
@@ -630,39 +561,29 @@ public class Enemy_Range : MonoBehaviour
         _spawnRoamTriggered = true;
         _lostSightTimer     = 0f;
 
-        if (_state == State.InCover)
-            EnterPeeking();
-        else if (_state == State.Roaming)
-        {
-            StopAgent();
-            EnterSeekCover();
-        }
+        if (_state == State.InCover)   EnterPeeking();
+        else if (_state == State.Roaming) { StopMoving(); EnterSeekCover(); }
     }
 
     // -----------------------------------------------------------------
     //  Combat
     // -----------------------------------------------------------------
 
-    /// <summary>
-    /// Controls body rotation based on awareness.
-    ///   Unaware (no last-known): face NavMesh movement direction.
-    ///   Aware: track last-known or live player position.
-    /// </summary>
     private void UpdateBodyRotation()
     {
         float targetAngle;
 
         if (_haveLastKnown || _state == State.Peeking)
         {
-            Vector3 lookTarget = (_state == State.Peeking && _player != null)
-                                 ? _player.position
-                                 : _playerLastKnown;
-            Vector2 dir  = ((Vector2)lookTarget - (Vector2)transform.position).normalized;
+            Vector3 look = (_state == State.Peeking && _player != null)
+                           ? _player.position
+                           : _playerLastKnown;
+            Vector2 dir  = ((Vector2)look - (Vector2)transform.position).normalized;
             targetAngle  = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         }
         else
         {
-            Vector3 vel = _agent.velocity;
+            Vector3 vel = _ai.velocity;
             if (vel.sqrMagnitude > 0.05f)
                 targetAngle = Mathf.Atan2(vel.y, vel.x) * Mathf.Rad2Deg;
             else
@@ -675,19 +596,13 @@ public class Enemy_Range : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, newAngle);
     }
 
-    /// <summary>
-    /// Returns true when the player is inside the narrow FOV cone AND the
-    /// shot is unobstructed. Falls back to a plain raycast if FOV is absent.
-    /// </summary>
     private bool CanFire()
     {
         if (_player == null) return false;
-        if (_fov != null && _fov.enabled)
-            return _fov.IsInFireCone(_player.position);
+        if (_fov != null && _fov.enabled) return _fov.IsInFireCone(_player.position);
         return HasClearShot();
     }
 
-    /// <summary>Plain obstacle raycast — no cone restriction.</summary>
     private bool HasClearShot()
     {
         if (_player == null || firepos == null) return false;
@@ -698,7 +613,6 @@ public class Enemy_Range : MonoBehaviour
         return hit.collider == null;
     }
 
-    /// <summary>Fire one bullet, tick cooldown and shot counter.</summary>
     private void TakeShot()
     {
         ShootAt(_player.position);
@@ -706,12 +620,11 @@ public class Enemy_Range : MonoBehaviour
         _shotsThisPeek++;
     }
 
-    /// <summary>Fire one bullet toward an arbitrary world position (e.g. last-known).</summary>
     private void ShootAt(Vector3 targetPos)
     {
         if (bulletPre == null || firepos == null) return;
-        Vector2 shootDir = ((Vector2)targetPos - (Vector2)firepos.position).normalized;
-        float   angle    = Mathf.Atan2(shootDir.y, shootDir.x) * Mathf.Rad2Deg;
+        Vector2 dir   = ((Vector2)targetPos - (Vector2)firepos.position).normalized;
+        float   angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Instantiate(bulletPre, firepos.position, Quaternion.Euler(0f, 0f, angle));
     }
 
@@ -719,7 +632,6 @@ public class Enemy_Range : MonoBehaviour
     //  Damage / Death
     // -----------------------------------------------------------------
 
-    /// <summary>Called when this enemy is hit. Spawns blood splatter decals.</summary>
     public void RegisterHit(int amount)
     {
         if (bloodSplatPrefab != null)
@@ -728,8 +640,7 @@ public class Enemy_Range : MonoBehaviour
             {
                 Vector2 offset   = Random.insideUnitCircle * splatRadius;
                 Vector3 splatPos = transform.position + new Vector3(offset.x, offset.y, 0f);
-                float   rot      = Random.Range(0f, 360f);
-                Instantiate(bloodSplatPrefab, splatPos, Quaternion.Euler(0f, 0f, rot));
+                Instantiate(bloodSplatPrefab, splatPos, Quaternion.Euler(0f, 0f, Random.Range(0f, 360f)));
             }
         }
 
@@ -742,37 +653,28 @@ public class Enemy_Range : MonoBehaviour
     }
 
     // -----------------------------------------------------------------
-    //  NavMesh Helpers
+    //  AIPath Helpers
     // -----------------------------------------------------------------
 
-    private void SetAgentDestination(Vector3 pos)
+    private void SetDestination(Vector3 pos)
     {
-        if (_agent == null || !_agent.isOnNavMesh) return;
-        _agent.isStopped   = false;
-        _agent.destination = pos;
+        _ai.isStopped   = false;
+        _ai.destination = pos;
     }
 
-    private void SetAgentSpeed(float speed)
+    private void SetSpeed(float speed)
     {
-        if (_agent != null) _agent.speed = speed;
+        _ai.maxSpeed = speed;
     }
 
-    private void StopAgent()
+    private void StopMoving()
     {
-        if (_agent == null || !_agent.isOnNavMesh) return;
-        _agent.isStopped = true;
-        _agent.velocity  = Vector3.zero;
+        _ai.isStopped = true;
     }
 
-    /// <summary>
-    /// Returns true when the NavMeshAgent has reached its destination
-    /// (path is not pending and remaining distance is within arrivalThreshold).
-    /// </summary>
-    private bool HasAgentArrived()
+    private bool HasArrived()
     {
-        if (_agent == null || !_agent.isOnNavMesh) return true;
-        if (_agent.pathPending) return false;
-        return _agent.remainingDistance <= arrivalThreshold;
+        return !_ai.pathPending && _ai.remainingDistance <= arrivalThreshold;
     }
 
     // -----------------------------------------------------------------
@@ -781,13 +683,11 @@ public class Enemy_Range : MonoBehaviour
 
     private void SetFOVVisible(bool visible)
     {
-        if (_fov != null)
-            _fov.enabled = visible;
+        if (_fov != null) _fov.enabled = visible;
     }
 
     private void OnDestroy()
     {
-        if (_currentCover != null)
-            _currentCover.Release(this);
+        if (_currentCover != null) _currentCover.Release(this);
     }
 }
