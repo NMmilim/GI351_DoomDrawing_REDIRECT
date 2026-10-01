@@ -142,6 +142,17 @@ public class Enemy_Range : MonoBehaviour
     public float roamWaypointRadius = 8f;
 
     // -----------------------------------------------------------------
+    //  Inspector - Stuck Recovery
+    // -----------------------------------------------------------------
+
+    [Header("Stuck Recovery")]
+    [Tooltip("If the enemy doesn't reach its destination within this many seconds it will abandon the path and re-route.")]
+    public float stuckTimeout = 10f;
+
+    [Tooltip("Minimum distance the enemy must travel per stuckTimeout window to be considered not stuck.")]
+    public float stuckMoveThreshold = 0.15f;
+
+    // -----------------------------------------------------------------
     //  Inspector - Combat
     // -----------------------------------------------------------------
 
@@ -193,6 +204,10 @@ public class Enemy_Range : MonoBehaviour
     private float _lostSightTimer;
     private float _spawnTimer;
     private float _roamWaypointTimer;
+
+    // Stuck detection
+    private float   _stuckTimer;
+    private Vector3 _stuckLastPos;
 
     // -----------------------------------------------------------------
     //  Private - Cover & Peek
@@ -322,6 +337,7 @@ public class Enemy_Range : MonoBehaviour
     {
         _state          = State.SeekCover;
         _seekCoverTimer = 4f;
+        ResetStuckTimer();
 
         if (_currentCover != null) { _currentCover.Release(this); _currentCover = null; }
 
@@ -351,7 +367,9 @@ public class Enemy_Range : MonoBehaviour
             StopMoving();
             if (_seekCoverTimer <= 0f) _coverPosition = transform.position;
             EnterInCover();
+            return;
         }
+        CheckStuck();
     }
 
     // -----------------------------------------------------------------
@@ -472,6 +490,7 @@ public class Enemy_Range : MonoBehaviour
         SetFOVVisible(false);
         SetSpeed(moveSpeed);
         SetDestination(_coverPosition);
+        ResetStuckTimer();
     }
 
     private void TickReturning()
@@ -480,7 +499,9 @@ public class Enemy_Range : MonoBehaviour
         {
             StopMoving();
             EnterInCover();
+            return;
         }
+        CheckStuck();
     }
 
     // -----------------------------------------------------------------
@@ -496,6 +517,7 @@ public class Enemy_Range : MonoBehaviour
         StopMoving();
         SetFOVVisible(true);
         SetSpeed(roamSpeed);
+        ResetStuckTimer();
         PickRoamWaypoint();
     }
 
@@ -522,8 +544,13 @@ public class Enemy_Range : MonoBehaviour
             if (_roamWaypointTimer >= roamWaypointPause)
             {
                 _roamWaypointTimer = 0f;
+                ResetStuckTimer();
                 PickRoamWaypoint();
             }
+        }
+        else
+        {
+            CheckStuck();
         }
     }
 
@@ -534,6 +561,62 @@ public class Enemy_Range : MonoBehaviour
         Vector3 target = transform.position + new Vector3(rand.x, rand.y, 0f);
         SetSpeed(roamSpeed);
         SetDestination(target);
+    }
+
+    // -----------------------------------------------------------------
+    //  Stuck Detection
+    // -----------------------------------------------------------------
+
+    private void ResetStuckTimer()
+    {
+        _stuckTimer   = 0f;
+        _stuckLastPos = transform.position;
+    }
+
+    /// <summary>
+    /// Call every frame while the enemy is actively trying to reach a destination.
+    /// If the enemy hasn't moved stuckMoveThreshold units in stuckTimeout seconds
+    /// it abandons its current goal and re-routes.
+    /// </summary>
+    private void CheckStuck()
+    {
+        _stuckTimer += Time.deltaTime;
+        if (_stuckTimer < stuckTimeout) return;
+
+        // Check displacement over the timeout window
+        float moved = Vector3.Distance(transform.position, _stuckLastPos);
+        if (moved < stuckMoveThreshold)
+        {
+            // Genuinely stuck — abandon current goal
+            HandleStuck();
+        }
+
+        // Reset regardless so we don't spam every frame
+        ResetStuckTimer();
+    }
+
+    private void HandleStuck()
+    {
+        StopMoving();
+
+        // Release claimed cover so another enemy can use it
+        if (_currentCover != null) { _currentCover.Release(this); _currentCover = null; }
+
+        switch (_state)
+        {
+            case State.SeekCover:
+            case State.Returning:
+                // Can't reach cover — take cover wherever we are and try fresh cover next peek cycle
+                _coverPosition = transform.position;
+                EnterInCover();
+                break;
+
+            case State.Roaming:
+                // Pick a different random waypoint and keep roaming
+                ResetStuckTimer();
+                PickRoamWaypoint();
+                break;
+        }
     }
 
     // -----------------------------------------------------------------
