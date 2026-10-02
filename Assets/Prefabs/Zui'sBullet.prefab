@@ -109,8 +109,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyBullet
   collisionMask:
     serializedVersion: 2
-    m_Bits: 64
-  speed: 10
+    m_Bits: 72
+  speed: 30
 --- !u!50 &7182840087657211903
 Rigidbody2D:
   serializedVersion: 5
