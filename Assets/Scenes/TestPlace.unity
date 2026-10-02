@@ -1852,63 +1852,6 @@ MonoBehaviour:
   RailBullet: {fileID: 489108015173950609, guid: 23e35e3d373a95b4fb0aadebba2fd7c9, type: 3}
   peakIntensity: 8
   flashDuration: 0.08
---- !u!68 &990147689
-EdgeCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 615302100}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0
-  m_Points:
-  - {x: 1.738488, y: -8.537325}
-  - {x: 1.5471663, y: -8.757277}
-  - {x: 0.7126244, y: -9.256063}
-  - {x: -0.4276696, y: -9.585264}
-  - {x: -1.6902139, y: -9.325726}
-  - {x: -3.079312, y: -8.354114}
-  - {x: -4.4885716, y: -4.4594526}
-  - {x: -5.171548, y: -1.3527601}
-  - {x: -2.5766656, y: 4.42422}
-  - {x: 1.398757, y: 3.6378255}
-  - {x: 4.735249, y: -0.836666}
-  - {x: 5.760303, y: -6.291391}
-  - {x: 5.2389827, y: -9.071915}
-  - {x: 4.620866, y: -9.959901}
-  - {x: 3.1223092, y: -9.36662}
-  - {x: 1.7919297, y: -8.491875}
-  m_AdjacentStartPoint: {x: 0, y: 0}
-  m_AdjacentEndPoint: {x: 0, y: 0}
-  m_UseAdjacentStartPoint: 0
-  m_UseAdjacentEndPoint: 0
 --- !u!212 &990147694
 SpriteRenderer:
   serializedVersion: 2
@@ -2008,7 +1951,7 @@ MonoBehaviour:
     m_Extent: {x: 0.9985302, y: 0.99853027, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
-  m_PointLightInnerRadius: 0.32512215
+  m_PointLightInnerRadius: 0.4427358
   m_PointLightOuterRadius: 3
   m_ShapeLightParametricSides: 5
   m_ShapeLightParametricAngleOffset: 0
@@ -2020,7 +1963,7 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
---- !u!61 &990147700
+--- !u!61 &990147704
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2054,7 +1997,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.3564129, y: -1.7374244}
+  m_Offset: {x: 0.24611282, y: -2.673376}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -2064,7 +2007,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 11.289469, y: 16.75066}
+  m_Size: {x: 10.92333, y: 13.043003}
   m_EdgeRadius: 0
 --- !u!1 &1168737300
 GameObject:
@@ -5531,16 +5474,13 @@ PrefabInstance:
       addedObject: {fileID: 990147688}
     - targetCorrespondingSourceObject: {fileID: 2179881957683385051, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 990147689}
-    - targetCorrespondingSourceObject: {fileID: 2179881957683385051, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 990147694}
     - targetCorrespondingSourceObject: {fileID: 2179881957683385051, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       insertIndex: -1
       addedObject: {fileID: 990147695}
     - targetCorrespondingSourceObject: {fileID: 2179881957683385051, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 990147700}
+      addedObject: {fileID: 990147704}
   m_SourcePrefab: {fileID: 100100000, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
