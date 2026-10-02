@@ -533,7 +533,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Range
   bulletPre: {fileID: 464745323818207289, guid: 598f6ddff6fef9a45b33ad00c2fed080, type: 3}
   firepos: {fileID: 5373419031918609396}
-  bloodSplatPrefab: {fileID: 100000, guid: 358b75ea5451cf143ab19029a189097d, type: 3}
+  bloodSplatPrefab: {fileID: 0}
   maxHp: 3
   moveSpeed: 3
   roamSpeed: 1.2
@@ -551,6 +551,8 @@ MonoBehaviour:
   alertBroadcastRadius: 15
   roamWaypointPause: 1.5
   roamWaypointRadius: 8
+  stuckTimeout: 10
+  stuckMoveThreshold: 0.15
   obstacleMask:
     serializedVersion: 2
     m_Bits: 8
