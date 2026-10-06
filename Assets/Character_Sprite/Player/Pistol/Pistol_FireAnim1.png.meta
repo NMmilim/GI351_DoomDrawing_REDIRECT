@@ -1,13 +1,13 @@
 fileFormatVersion: 2
-guid: 9901390f9fd6719419000c32e7050ad3
+guid: f9ffdb1ee43a14e4e81725640e9792fb
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 3264458924369923270
-    second: Pistol_FireAnim_0
+      213: -3405205004593630704
+    second: Pistol_FireAnim1_0
   - first:
-      213: -5584100803970433120
-    second: Pistol_FireAnim_1
+      213: -8823319754387711585
+    second: Pistol_FireAnim1_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -54,7 +54,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 64
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -116,7 +116,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Pistol_FireAnim_0
+      name: Pistol_FireAnim1_0
       rect:
         serializedVersion: 2
         x: 692
@@ -131,14 +131,14 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 6cc4cea8810bd4d20800000000000000
-      internalID: 3264458924369923270
+      spriteID: 01270d107184eb0d0800000000000000
+      internalID: -3405205004593630704
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Pistol_FireAnim_1
+      name: Pistol_FireAnim1_1
       rect:
         serializedVersion: 2
         x: 2692
@@ -153,8 +153,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 0af7e5597e94182b0800000000000000
-      internalID: -5584100803970433120
+      spriteID: f99980c6e654d8580800000000000000
+      internalID: -8823319754387711585
       vertices: []
       indices: 
       edges: []
@@ -173,8 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Pistol_FireAnim_0: 3264458924369923270
-      Pistol_FireAnim_1: -5584100803970433120
+      Pistol_FireAnim1_0: -3405205004593630704
+      Pistol_FireAnim1_1: -8823319754387711585
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
