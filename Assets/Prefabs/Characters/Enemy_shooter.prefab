@@ -109,7 +109,7 @@ MonoBehaviour:
   meshResolution: 16
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   activeBeamColor: {r: 1, g: 0.82, b: 0.4, a: 0.3}
   blockedBeamColor: {r: 1, g: 0.96, b: 0.75, a: 0.12}
   colorBlendSpeed: 8
@@ -128,9 +128,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6057629935791353876}
   - component: {fileID: 8940790574745657373}
-  m_Layer: 7
+  m_Layer: 3
   m_Name: rw
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -546,7 +546,7 @@ MonoBehaviour:
   centerOffsetCompatibility: NaN
   repathRateCompatibility: NaN
   canSearchCompability: 0
-  orientation: 0
+  orientation: 1
   enableRotation: 1
   autoRepath:
     mode: 2
@@ -580,6 +580,7 @@ MonoBehaviour:
   firepos: {fileID: 7278132056579908889}
   bloodSplatPrefab: {fileID: 7346654079416602471, guid: aaa0e3e898885b84ab260c886b8c7fa5, type: 3}
   maxHp: 3
+  coinReward: 5
   moveSpeed: 3
   roamSpeed: 1.2
   arrivalThreshold: 0.35
@@ -600,6 +601,6 @@ MonoBehaviour:
   stuckMoveThreshold: 0.15
   obstacleMask:
     serializedVersion: 2
-    m_Bits: 72
+    m_Bits: 8
   splatsPerHit: 3
   splatRadius: 0.6
