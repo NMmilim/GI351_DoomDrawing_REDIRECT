@@ -538,12 +538,26 @@ MonoBehaviour:
   maxhp: 100
   armor: 0
   speed: 5
+  baseMaxHp: 100
+  baseSpeed: 5
+  baseMagazineSize: 8
+  baseFireInterval: 0.25
   dmg: 3
   cooldown: 1
   nextFireTime: 0
+  magazineSize: 0
+  fireInterval: 0
   UpgRicochet: 0
   Piercing: 0
   BulletSpeed: 0
+  fireRateLevel: 0
+  walkSpeedLevel: 0
+  magazineLevel: 0
+  homingRicochet: 0
+  fireRateMultiplierPerLevel: 0.85
+  minFireInterval: 0.06
+  walkSpeedPerLevel: 0.5
+  magazinePerLevel: 2
 --- !u!4 &234762822
 Transform:
   m_ObjectHideFlags: 0
@@ -1369,6 +1383,33 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
+--- !u!1 &899090166 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 898754098581092283, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+  m_PrefabInstance: {fileID: 8404270451384026102}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &899090170
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899090166}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 94a06e9595cdd034488b2e3b80763f00, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &902700663
 GameObject:
   m_ObjectHideFlags: 0
@@ -1670,6 +1711,28 @@ MonoBehaviour:
   RailBullet: {fileID: 489108015173950609, guid: 23e35e3d373a95b4fb0aadebba2fd7c9, type: 3}
   peakIntensity: 8
   flashDuration: 0.08
+  fireKey: 50
+  chargeTime: 0.8
+  holdToCharge: 0
+  moveSpeedWhileCharging: 0.5
+  chargeGlowColor: {r: 0.35, g: 0.85, b: 1, a: 1}
+  chargeGlowIntensity: 4
+  chargeEffect: {fileID: 0}
+  chargeAudioSource: {fileID: 0}
+  showAimLine: 0
+  aimLine: {fileID: 0}
+  aimLineMask:
+    serializedVersion: 2
+    m_Bits: 0
+  aimLineLength: 30
+  aimLineMaxWidth: 0.12
+  aimLineColor: {r: 0.35, g: 0.85, b: 1, a: 0.8}
+  railAnimator: {fileID: 899090170}
+  chargingBool: IsCharging
+  chargeSpeedFloat: ChargeSpeed
+  fireTrigger: RailFire
+  cancelTrigger: RailCancel
+  chargeClipLength: 1
 --- !u!212 &990147694
 SpriteRenderer:
   serializedVersion: 2
@@ -1678,7 +1741,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 615302100}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -1719,15 +1782,15 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 5
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 1502346020129526049, guid: 65e418c799c27e24a923dfa26ef5777b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 10.625, y: 19.578125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 0
+  m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
 --- !u!114 &990147695
 MonoBehaviour:
@@ -1818,10 +1881,10 @@ BoxCollider2D:
   m_Offset: {x: 0.24611282, y: -2.673376}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 10.625, y: 19.578125}
+    newSize: {x: 10.625, y: 19.578125}
+    adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
@@ -2809,6 +2872,7 @@ MonoBehaviour:
     spawnInterval: 1
   delayBetweenWaves: 2
   waitForWaveClear: 1
+  offerUpgradesBetweenWaves: 1
   spawnRadius: 1.5
   initialDelay: 1.4
   loopWaves: 1
@@ -3272,6 +3336,10 @@ MonoBehaviour:
   goMenu: {fileID: 0}
   _player: {fileID: 0}
   pause: 0
+  gameOverScreen: {fileID: 0}
+  mainMenuSceneName: GameMenu
+  gameOverDelay: 0.8
+  coinsPerWaveCleared: 20
 --- !u!4 &1546477818
 Transform:
   m_ObjectHideFlags: 0
@@ -4610,6 +4678,97 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1.1307676}
   m_EdgeRadius: 0
+--- !u!1 &2094575232
+GameObject:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2094575234}
+  - component: {fileID: 2094575233}
+  m_Layer: 0
+  m_Name: Pistol_FireAnim_1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &2094575233
+SpriteRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2094575232}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: -5584100803970433120, guid: 9901390f9fd6719419000c32e7050ad3, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 6.8, y: 12.53}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+--- !u!4 &2094575234
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2094575232}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.9272814, y: -0.7750287, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &873279424418276343
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4783,6 +4942,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5025944184597525092, guid: 0a9624931e3faa147927eaba1e66bb72, type: 3}
+      propertyPath: m_Size.x
+      value: 2.0214794
+      objectReference: {fileID: 0}
+    - target: {fileID: 5025944184597525092, guid: 0a9624931e3faa147927eaba1e66bb72, type: 3}
+      propertyPath: m_Size.y
+      value: 0.96124995
+      objectReference: {fileID: 0}
+    - target: {fileID: 5025944184597525092, guid: 0a9624931e3faa147927eaba1e66bb72, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: -6288179971597629913, guid: fb79c299f70399e429cd183ac6ef242a, type: 3}
+    - target: {fileID: 5025944184597525092, guid: 0a9624931e3faa147927eaba1e66bb72, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9152041436189616690, guid: 0a9624931e3faa147927eaba1e66bb72, type: 3}
       propertyPath: m_Name
       value: Sofa
@@ -4812,6 +4987,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 1502346020129526049, guid: 65e418c799c27e24a923dfa26ef5777b, type: 3}
+    - target: {fileID: 3757176580905902817, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3757176580905902817, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_SortingOrder
       value: 1
@@ -4869,6 +5048,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      propertyPath: gunAnimator
+      value: 
+      objectReference: {fileID: 899090170}
+    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: muzzleFlash
       value: 
       objectReference: {fileID: 0}
@@ -4880,6 +5063,10 @@ PrefabInstance:
       propertyPath: bulletPrefab
       value: 
       objectReference: {fileID: 5188104836314514803, guid: 6ef3c2b2f2397fe4185081a65abef309, type: 3}
+    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      propertyPath: autoReloadWhenEmpty
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5384159810427250356, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.55
@@ -4925,6 +5112,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2179881957683385051, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       insertIndex: -1
       addedObject: {fileID: 990147704}
+    - targetCorrespondingSourceObject: {fileID: 898754098581092283, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 899090170}
   m_SourcePrefab: {fileID: 100100000, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
@@ -4947,3 +5137,4 @@ SceneRoots:
   - {fileID: 104837369}
   - {fileID: 1483455907}
   - {fileID: 1565281970}
+  - {fileID: 2094575234}

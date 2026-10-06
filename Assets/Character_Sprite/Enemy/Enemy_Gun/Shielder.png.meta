@@ -5,9 +5,6 @@ TextureImporter:
   - first:
       213: -3200690093931153047
     second: Shielder_0
-  - first:
-      213: 3578167653507954402
-    second: Shielder_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -49,12 +46,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 64
+  spritePixelsToUnits: 1100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -119,10 +116,10 @@ TextureImporter:
       name: Shielder_0
       rect:
         serializedVersion: 2
-        x: 311
+        x: 366
         y: 306
         width: 1085
-        height: 1074
+        height: 1073
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,33 +134,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: Shielder_1
-      rect:
-        serializedVersion: 2
-        x: 1221
-        y: 284
-        width: 52
-        height: 28
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2e6722ed58438a130800000000000000
-      internalID: 3578167653507954402
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 5e97eb03825dee720800000000000000
+    spriteID: 
     internalID: 0
     vertices: []
     indices: 
@@ -174,7 +149,6 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       Shielder_0: -3200690093931153047
-      Shielder_1: 3578167653507954402
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
