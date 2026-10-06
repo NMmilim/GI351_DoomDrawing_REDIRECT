@@ -35,11 +35,15 @@ public class PlayerMovement : Player
         public void FixedUpdate()
     {
         if (Time.timeScale == 0f) return;
+        PlayerManagement pm = PlayerManagement.Instance;
+        if (pm == null || pm.IsDead) { rb.linearVelocity = Vector2.zero; return; }
+
         float horizontal = Input.GetAxis("Horizontal");
     float vertical = Input.GetAxis("Vertical");
         //_playeranim.SetFloat("horizontal", horizontal);
         //_playeranim.SetFloat("vertical", vertical);
-        rb.linearVelocity = new Vector2(horizontal, vertical) * PlayerManagement.Instance.speed;
+        // speed = base + permanent + in-run upgrades; speedMultiplier = temporary slow (railgun charge)
+        rb.linearVelocity = new Vector2(horizontal, vertical) * pm.speed * pm.speedMultiplier;
 
 
     }
