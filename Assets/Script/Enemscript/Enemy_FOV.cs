@@ -60,6 +60,7 @@ public class EnemyFOV : MonoBehaviour
     public Color laserColor      = new Color(1f, 0.9f, 0.5f, 0.9f);
     public float laserWidth      = 0.03f;
     public float laserPulseSpeed = 3f;
+    public bool  showLaser       = false;
 
     public string coneSortingLayer = "Default";
     public int    coneSortingOrder = -1;
@@ -174,16 +175,20 @@ public class EnemyFOV : MonoBehaviour
 
         BuildConeMesh();
 
-        _laserPulseT += Time.deltaTime * laserPulseSpeed;
-        float pulse = 0.55f + 0.45f * Mathf.Sin(_laserPulseT);
-        Color lc = laserColor;
-        lc.a *= pulse;
-        _laser.material.color = lc;
+        _laser.enabled = showLaser;
+        if (showLaser)
+        {
+            _laserPulseT += Time.deltaTime * laserPulseSpeed;
+            float pulse = 0.55f + 0.45f * Mathf.Sin(_laserPulseT);
+            Color lc = laserColor;
+            lc.a *= pulse;
+            _laser.material.color = lc;
 
-        Vector3 origin   = transform.position;
-        Vector3 tipWorld = origin + (Vector3)(ForwardDir() * viewRadius);
-        _laser.SetPosition(0, origin);
-        _laser.SetPosition(1, tipWorld);
+            Vector3 origin   = transform.position;
+            Vector3 tipWorld = origin + (Vector3)(ForwardDir() * viewRadius);
+            _laser.SetPosition(0, origin);
+            _laser.SetPosition(1, tipWorld);
+        }
     }
 
     private void BuildConeMesh()
@@ -227,8 +232,7 @@ public class EnemyFOV : MonoBehaviour
     //  Helpers
     // -----------------------------------------------------------------
 
-    private Vector2 ForwardDir() =>
-        _enemyBody != null ? (Vector2)_enemyBody.right : (Vector2)transform.right;
+    private Vector2 ForwardDir() => transform.right;
 
     private static Vector2 AngleToDir(float deg)
     {
@@ -243,9 +247,7 @@ public class EnemyFOV : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
-        Transform body   = (Application.isPlaying && _enemyBody != null)
-                           ? _enemyBody
-                           : (transform.parent != null ? transform.parent : transform);
+        Transform body   = transform;
         Vector3 origin   = body.position;
         float   fwdAngle = body.eulerAngles.z;
 
