@@ -17,11 +17,18 @@ using UnityEngine.Rendering.Universal;
 ///   bulletPrefab / firepos / muzzleLight : same as before (muzzleLight is optional now).
 ///   reloadTime        : seconds a reload takes.
 ///   holdToFire        : true = hold LMB for auto fire at the fire rate. false = click per shot.
-///   gunAnimator       : OPTIONAL. If assigned, the trigger named reloadTrigger is fired on reload.
+///   gunAnimator       : OPTIONAL Animator for shoot / reload animations. Parameters it uses
+///                       (all optional, missing ones are skipped, names editable in Inspector):
+///                         Trigger "Fire"        - every pistol shot
+///                         Trigger "Reload"      - reload starts
+///                         Bool    "IsReloading" - true during the whole reload
+///                         Float   "ReloadSpeed" - reloadClipLength / reloadTime. Tick the Reload
+///                                                 state's Speed > Multiplier > Parameter and pick
+///                                                 this, so the animation always lasts reloadTime.
 ///
 /// ─── FOR UI ─────────────────────────────────────────────────────────────────
 ///   Read CurrentAmmo, MagazineSize, IsReloading, ReloadProgress (0..1),
-///   or subscribe to OnAmmoChanged. AmmoHUD.cs already does this.
+///   or subscribe to OnAmmoChanged. AmmoUI.cs already does this.
 ///
 /// ─── SOUND IDs (add them to SoundLibrary; missing ones are silently skipped) ─
 ///   "Pistol_Fire" (existing), "Pistol_Reload", "Pistol_Empty"
@@ -47,9 +54,14 @@ public class Shooting : MonoBehaviour
     [Tooltip("Hold left mouse to keep firing at the current fire rate.")]
     public bool holdToFire = true;
 
-    [Header("Optional reload animation")]
+    [Header("Optional animation (see summary)")]
     public Animator gunAnimator;
-    public string reloadTrigger = "Reload";
+    public string fireTrigger       = "Fire";
+    public string reloadTrigger     = "Reload";
+    public string reloadingBool     = "IsReloading";
+    public string reloadSpeedFloat  = "ReloadSpeed";
+    [Tooltip("Length (seconds) of the reload animation clip. Used to compute ReloadSpeed.")]
+    public float  reloadClipLength  = 1f;
 
     public static Shooting Instance { get; private set; }
 
@@ -94,11 +106,13 @@ public class Shooting : MonoBehaviour
         // Coroutines die when disabled — make sure we don't get stuck in "reloading".
         _reloadCoroutine = null;
         ReloadProgress   = 0f;
+        AnimatorUtil.Bool(gunAnimator, reloadingBool, false);
     }
 
     private void Update()
     {
         if (Time.timeScale == 0f) return;
+        if (UpgradeManager.JustClosed) return;   // the click/key that picked a card shouldn't shoot
         if (PlayerManagement.Instance != null && PlayerManagement.Instance.IsDead) return;
 
         if (Input.GetKeyDown(reloadKey))
@@ -129,6 +143,7 @@ public class Shooting : MonoBehaviour
             _nextShotTime = Time.time + interval;
 
             Instantiate(bulletPrefab, firepos.position, transform.rotation);
+            AnimatorUtil.Trigger(gunAnimator, fireTrigger);
 
             SoundManager.Instance?.PlaySound3D("Pistol_Fire", firepos.position);
             if (muzzleLight != null)
@@ -172,8 +187,10 @@ public class Shooting : MonoBehaviour
         OnAmmoChanged?.Invoke();
 
         SoundManager.Instance?.PlaySound3D("Pistol_Reload", transform.position);
-        if (gunAnimator != null && !string.IsNullOrEmpty(reloadTrigger))
-            gunAnimator.SetTrigger(reloadTrigger);
+        AnimatorUtil.ResetTrigger(gunAnimator, fireTrigger);
+        AnimatorUtil.Float(gunAnimator, reloadSpeedFloat, reloadTime > 0f ? reloadClipLength / reloadTime : 1f);
+        AnimatorUtil.Bool(gunAnimator, reloadingBool, true);
+        AnimatorUtil.Trigger(gunAnimator, reloadTrigger);
 
         float elapsed = 0f;
         while (elapsed < reloadTime)
@@ -186,6 +203,7 @@ public class Shooting : MonoBehaviour
         CurrentAmmo      = MagazineSize;
         ReloadProgress   = 0f;
         _reloadCoroutine = null;
+        AnimatorUtil.Bool(gunAnimator, reloadingBool, false);
         OnAmmoChanged?.Invoke();
     }
 
@@ -193,6 +211,7 @@ public class Shooting : MonoBehaviour
     public void RefillMagazine()
     {
         if (_reloadCoroutine != null) { StopCoroutine(_reloadCoroutine); _reloadCoroutine = null; }
+        AnimatorUtil.Bool(gunAnimator, reloadingBool, false);
         CurrentAmmo    = MagazineSize;
         ReloadProgress = 0f;
         OnAmmoChanged?.Invoke();

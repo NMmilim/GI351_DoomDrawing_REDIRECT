@@ -51,6 +51,10 @@ public class EnemySpawner : MonoBehaviour
     [Tooltip("If true, wait until ALL enemies are dead before starting next wave.")]
     public bool waitForWaveClear = true;
 
+    [Tooltip("Show the 'Select Upgrade' screen (UpgradeManager) after each cleared wave. " +
+             "Needs waitForWaveClear = true.")]
+    public bool offerUpgradesBetweenWaves = true;
+
     // -----------------------------------------------------------------
     //  Inspector - Spawn Settings
     // -----------------------------------------------------------------
@@ -138,7 +142,23 @@ public class EnemySpawner : MonoBehaviour
                 if (waitForWaveClear)
                     yield return new WaitUntil(WaveIsCleared);
 
-                if (waveIdx < waves.Length - 1 || loopWaves)
+                bool hasNextWave = waveIdx < waves.Length - 1 || loopWaves;
+
+                // ---- Wave cleared: coins + upgrade pick -------------------
+                if (waitForWaveClear)
+                {
+                    int clearedNumber = _loopCount * waves.Length + waveIdx + 1;   // 1-based, keeps counting across loops
+                    if (GameManager.Instance != null) GameManager.Instance.OnWaveCleared(clearedNumber);
+
+                    // Game pauses while the screen is open; WaitUntil still runs at timeScale 0.
+                    if (offerUpgradesBetweenWaves && hasNextWave && UpgradeManager.Instance != null
+                        && UpgradeManager.Instance.ShowChoices(clearedNumber))
+                    {
+                        yield return new WaitUntil(() => UpgradeManager.Instance == null || !UpgradeManager.Instance.IsOpen);
+                    }
+                }
+
+                if (hasNextWave)
                 {
                     Debug.Log($"[EnemySpawner] {wave.waveName} complete. Next in {delayBetweenWaves}s.");
                     yield return new WaitForSeconds(delayBetweenWaves);
