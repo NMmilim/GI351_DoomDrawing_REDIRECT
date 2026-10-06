@@ -293,6 +293,7 @@ Transform:
   m_Children:
   - {fileID: 1168737301}
   - {fileID: 556026028}
+  - {fileID: 661463441}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &129381954
@@ -538,12 +539,26 @@ MonoBehaviour:
   maxhp: 100
   armor: 0
   speed: 5
+  baseMaxHp: 100
+  baseSpeed: 5
+  baseMagazineSize: 8
+  baseFireInterval: 0.25
   dmg: 3
   cooldown: 1
   nextFireTime: 0
+  magazineSize: 0
+  fireInterval: 0
   UpgRicochet: 0
   Piercing: 0
   BulletSpeed: 0
+  fireRateLevel: 0
+  walkSpeedLevel: 0
+  magazineLevel: 0
+  homingRicochet: 0
+  fireRateMultiplierPerLevel: 0.85
+  minFireInterval: 0.06
+  walkSpeedPerLevel: 0.5
+  magazinePerLevel: 2
 --- !u!4 &234762822
 Transform:
   m_ObjectHideFlags: 0
@@ -928,7 +943,7 @@ Transform:
   m_GameObject: {fileID: 556026027}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.55018, y: -1.4757899, z: -10}
+  m_LocalPosition: {x: -1.48511, y: 0.37135, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1002,7 +1017,7 @@ MonoBehaviour:
   m_StreamingVersion: 20241001
   m_LegacyPriority: 0
   Target:
-    TrackingTarget: {fileID: 990147683}
+    TrackingTarget: {fileID: 661463441}
     LookAtTarget: {fileID: 0}
     CustomLookAtTarget: 0
   Lens:
@@ -1076,6 +1091,54 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 2179881957683385051, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
   m_PrefabInstance: {fileID: 8404270451384026102}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &661463440
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 661463441}
+  - component: {fileID: 661463442}
+  m_Layer: 0
+  m_Name: CameraTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &661463441
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661463440}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -1.48511, y: 0.37135, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 116290040}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &661463442
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661463440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f5698aaaeb9a884e9b810a96aa40b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraMouseTracker
+  playerTransform: {fileID: 990147683}
+  maxDistance: 4
+  mouseWeight: 0.4
+  smoothSpeed: 15
 --- !u!1 &705227817
 GameObject:
   m_ObjectHideFlags: 0
@@ -1670,6 +1733,28 @@ MonoBehaviour:
   RailBullet: {fileID: 489108015173950609, guid: 23e35e3d373a95b4fb0aadebba2fd7c9, type: 3}
   peakIntensity: 8
   flashDuration: 0.08
+  fireKey: 50
+  chargeTime: 0.8
+  holdToCharge: 0
+  moveSpeedWhileCharging: 0.5
+  chargeGlowColor: {r: 0.35, g: 0.85, b: 1, a: 1}
+  chargeGlowIntensity: 4
+  chargeEffect: {fileID: 0}
+  chargeAudioSource: {fileID: 0}
+  showAimLine: 1
+  aimLine: {fileID: 0}
+  aimLineMask:
+    serializedVersion: 2
+    m_Bits: 0
+  aimLineLength: 30
+  aimLineMaxWidth: 0.12
+  aimLineColor: {r: 0.35, g: 0.85, b: 1, a: 0.8}
+  railAnimator: {fileID: 0}
+  chargingBool: IsCharging
+  chargeSpeedFloat: ChargeSpeed
+  fireTrigger: RailFire
+  cancelTrigger: RailCancel
+  chargeClipLength: 1
 --- !u!212 &990147694
 SpriteRenderer:
   serializedVersion: 2
@@ -1856,7 +1941,7 @@ Transform:
   m_GameObject: {fileID: 1168737300}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 6.55018, y: -1.4757899, z: -10}
+  m_LocalPosition: {x: -1.48511, y: 0.37135, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2809,6 +2894,7 @@ MonoBehaviour:
     spawnInterval: 1
   delayBetweenWaves: 2
   waitForWaveClear: 1
+  offerUpgradesBetweenWaves: 1
   spawnRadius: 1.5
   initialDelay: 1.4
   loopWaves: 1
@@ -3272,6 +3358,10 @@ MonoBehaviour:
   goMenu: {fileID: 0}
   _player: {fileID: 0}
   pause: 0
+  gameOverScreen: {fileID: 0}
+  mainMenuSceneName: GameMenu
+  gameOverDelay: 0.8
+  coinsPerWaveCleared: 20
 --- !u!4 &1546477818
 Transform:
   m_ObjectHideFlags: 0
@@ -4880,6 +4970,10 @@ PrefabInstance:
       propertyPath: bulletPrefab
       value: 
       objectReference: {fileID: 5188104836314514803, guid: 6ef3c2b2f2397fe4185081a65abef309, type: 3}
+    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      propertyPath: autoReloadWhenEmpty
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5384159810427250356, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.55
