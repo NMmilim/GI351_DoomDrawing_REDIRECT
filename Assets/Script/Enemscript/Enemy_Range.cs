@@ -722,6 +722,7 @@ public class Enemy_Range : MonoBehaviour
     private void ShootAt(Vector3 targetPos)
     {
         if (bulletPre == null || firepos == null) return;
+        SoundManager.Instance.PlaySound3D("NPC_Pistol_Fire", firepos.position);
         Vector2 dir   = ((Vector2)targetPos - (Vector2)firepos.position).normalized;
         float   angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Instantiate(bulletPre, firepos.position, Quaternion.Euler(0f, 0f, angle));
