@@ -72,6 +72,9 @@ public class Enemy_Range : MonoBehaviour
     [Header("Stats")]
     public int maxHp = 3;
 
+    [Tooltip("Coins added to the run total when this enemy dies (banked on Game Over).")]
+    public int coinReward = 5;
+
     // -----------------------------------------------------------------
     //  Inspector - Movement
     // -----------------------------------------------------------------
@@ -243,6 +246,19 @@ public class Enemy_Range : MonoBehaviour
     private static void BroadcastTeamAlert() => _teamAlertTimer = 6f;
 
     private static bool TeamIsAlerted => _teamAlertTimer > 0f;
+
+    // -----------------------------------------------------------------
+    //  Static - Active enemy registry (used by homing ricochet bullets)
+    // -----------------------------------------------------------------
+
+    public static readonly System.Collections.Generic.List<Enemy_Range> Active =
+        new System.Collections.Generic.List<Enemy_Range>();
+
+    private bool _dead;
+    public bool IsDead => _dead;
+
+    private void OnEnable()  { if (!Active.Contains(this)) Active.Add(this); }
+    private void OnDisable() { Active.Remove(this); }
 
     // -----------------------------------------------------------------
     //  Unity Messages
@@ -717,6 +733,8 @@ public class Enemy_Range : MonoBehaviour
 
     public void RegisterHit(int amount)
     {
+        if (_dead) return;   // already dying this frame — ignore extra hits
+
         if (bloodSplatPrefab != null)
         {
             for (int i = 0; i < splatsPerHit; i++)
@@ -730,7 +748,10 @@ public class Enemy_Range : MonoBehaviour
         _hp -= amount;
         if (_hp <= 0)
         {
+            _dead = true;
+            Active.Remove(this);
             if (_currentCover != null) _currentCover.Release(this);
+            if (GameManager.Instance != null) GameManager.Instance.OnEnemyKilled(coinReward);
             Destroy(gameObject);
         }
     }

@@ -14,7 +14,9 @@ public class Enemy_Close : MonoBehaviour
     }
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        collision.gameObject.GetComponent<Player>().RegisterHit(-damage); 
+        // FIX: used to pass -damage (healed the player) and crashed on non-player collisions.
+        Player hitPlayer = collision.gameObject.GetComponent<Player>();
+        if (hitPlayer != null) hitPlayer.RegisterHit(damage);
 
         
     }
