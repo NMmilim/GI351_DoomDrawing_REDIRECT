@@ -204,6 +204,9 @@ MonoBehaviour:
     - {fileID: 8300000, guid: 78812f18279b6774da7dd60819a9142e, type: 3}
     - {fileID: 8300000, guid: ed29882e7f4175642a0df9d282d49b85, type: 3}
     - {fileID: 8300000, guid: c7004848fd1b50e41a184c0fa68555d5, type: 3}
+  - groupID: Railgun_Charge
+    clips:
+    - {fileID: 8300000, guid: a6783dd0a0cdb21438c1c71569b2d03b, type: 3}
 --- !u!114 &3954555000660303314
 MonoBehaviour:
   m_ObjectHideFlags: 0

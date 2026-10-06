@@ -49,14 +49,12 @@ public class UpgradeDefinition
 /// IN-RUN upgrades: after every cleared wave the game pauses and shows 3 cards.
 /// The player picks ONE. Upgrades reset when the run ends (scene reload).
 ///
-/// ─── SETUP (easy way) ───────────────────────────────────────────────────────
-///   Open the gameplay scene → menu  Tools > DoomDrawing > Create Gameplay UI.
-///   It builds the panel + 3 cards and wires everything below automatically.
-///
-/// ─── SETUP (manual) ─────────────────────────────────────────────────────────
-///   1. Put this on any GameObject in the gameplay scene.
-///   2. panel   = root object of the upgrade screen (disabled by default).
-///   3. cards   = 3 objects with UpgradeCardUI (each has a Button).
+/// ─── SETUP ──────────────────────────────────────────────────────────────────
+///   1. Put this on any GameObject in the gameplay scene (e.g. the GameManager object).
+///      ⚠ NOT on the panel itself — the panel gets hidden and would disable this script.
+///   2. panel   = root object of your team's "Select Upgrade" screen
+///                (can stay enabled in the editor — it's hidden on Awake).
+///   3. cards   = your 3 card objects, each with UpgradeCardUI (see that script).
 ///   4. stageText (optional) = TMP text for "Stage 2".
 ///   EnemySpawner calls ShowChoices() automatically when a wave is cleared.
 ///
@@ -88,6 +86,11 @@ public class UpgradeManager : MonoBehaviour
     public Color legendaryColor = new Color(1.00f, 0.75f, 0.15f);
 
     public bool IsOpen { get; private set; }
+
+    /// <summary>Frame the screen closed. Gameplay scripts ignore input on that frame
+    /// (otherwise pressing "2" to pick a card would also start a railgun charge).</summary>
+    public static int LastClosedFrame { get; private set; } = -10;
+    public static bool JustClosed => Time.frameCount - LastClosedFrame <= 1;
 
     /// <summary>Fired after the player picks an upgrade.</summary>
     public event Action<UpgradeDefinition> OnUpgradePicked;
@@ -127,8 +130,7 @@ public class UpgradeManager : MonoBehaviour
         if (IsOpen) return true;
         if (panel == null || cards == null || cards.Length == 0)
         {
-            Debug.LogWarning("[UpgradeManager] UI not assigned — skipping upgrade screen. " +
-                             "Run Tools > DoomDrawing > Create Gameplay UI.");
+            Debug.LogWarning("[UpgradeManager] Panel/Cards not assigned — skipping upgrade screen.");
             return false;
         }
         if (GameManager.Instance != null && GameManager.Instance.IsGameOver) return false;
@@ -173,6 +175,7 @@ public class UpgradeManager : MonoBehaviour
 
         panel.SetActive(false);
         IsOpen = false;
+        LastClosedFrame = Time.frameCount;
         Time.timeScale = 1f;
 
         OnUpgradePicked?.Invoke(def);

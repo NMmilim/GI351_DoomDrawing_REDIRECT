@@ -27,6 +27,15 @@ using UnityEngine.Rendering.Universal;
 ///
 /// ─── SOUND IDs (SoundLibrary) ───────────────────────────────────────────────
 ///   "Railgun_Charge" (only used if chargeAudioSource is empty), "Railgun_Fire" (in RailBullet)
+///
+/// ANIMATION (railAnimator, all optional - missing parameters are skipped, names editable):
+///   Bool    "IsCharging"  - true while charging (charge loop / wind-up animation)
+///   Float   "ChargeSpeed" - chargeClipLength / chargeTime. Use as the charge state's
+///                           Speed Multiplier so the wind-up lasts exactly chargeTime.
+///   Trigger "RailFire"    - the moment the shot leaves the barrel (recoil animation)
+///   Trigger "RailCancel"  - charge cancelled (holdToCharge released early / player died)
+///
+/// COOLDOWN UI: RailgunCooldownUI.cs reads CooldownFraction (1 = just fired, 0 = ready).
 /// </summary>
 public class Skill_rail : MonoBehaviour
 {
@@ -65,6 +74,15 @@ public class Skill_rail : MonoBehaviour
     public float aimLineMaxWidth = 0.12f;
     public Color aimLineColor    = new Color(0.35f, 0.85f, 1f, 0.8f);
 
+    [Header("Optional animation (see summary)")]
+    public Animator railAnimator;
+    public string chargingBool     = "IsCharging";
+    public string chargeSpeedFloat = "ChargeSpeed";
+    public string fireTrigger      = "RailFire";
+    public string cancelTrigger    = "RailCancel";
+    [Tooltip("Length (seconds) of the charge animation clip. Used to compute ChargeSpeed.")]
+    public float  chargeClipLength = 1f;
+
     /// <summary>True while ANY railgun is charging (Shooting uses this to block the pistol).</summary>
     public static bool IsAnyCharging { get; private set; }
 
@@ -77,6 +95,12 @@ public class Skill_rail : MonoBehaviour
 
     public float CooldownDuration =>
         PlayerManagement.Instance == null ? 0f : PlayerManagement.Instance.cooldown * 3f;
+
+    /// <summary>1 right after firing → 0 when ready again. Drive cooldown UI with this.</summary>
+    public float CooldownFraction =>
+        CooldownDuration <= 0f ? 0f : Mathf.Clamp01(CooldownRemaining / CooldownDuration);
+
+    public bool IsReady => !IsCharging && CooldownRemaining <= 0f;
 
     private float _chargeTimer;
     private Color _lightBaseColor = Color.white;
@@ -92,6 +116,7 @@ public class Skill_rail : MonoBehaviour
     void Update()
     {
         if (Time.timeScale == 0f) return;
+        if (UpgradeManager.JustClosed) return;   // pressing "2" to pick a card must not charge
 
         PlayerManagement pm = PlayerManagement.Instance;
         if (pm == null) return;
@@ -153,6 +178,9 @@ public class Skill_rail : MonoBehaviour
 
         if (chargeAudioSource != null) chargeAudioSource.Play();
         else SoundManager.Instance?.PlaySound3D("Railgun_Charge", firepos.position);
+
+        AnimatorUtil.Float(railAnimator, chargeSpeedFloat, chargeTime > 0f ? chargeClipLength / chargeTime : 1f);
+        AnimatorUtil.Bool(railAnimator, chargingBool, true);
     }
 
     /// <summary>Stops charging without firing (no cooldown is consumed).</summary>
@@ -160,6 +188,7 @@ public class Skill_rail : MonoBehaviour
     {
         EndChargeVisuals();
         if (muzzleLight != null) muzzleLight.intensity = 0f;
+        AnimatorUtil.Trigger(railAnimator, cancelTrigger);
     }
 
     private void EndChargeVisuals()
@@ -175,6 +204,7 @@ public class Skill_rail : MonoBehaviour
         if (aimLine != null) aimLine.enabled = false;
         if (chargeAudioSource != null) chargeAudioSource.Stop();
         if (muzzleLight != null) muzzleLight.color = _lightBaseColor;
+        AnimatorUtil.Bool(railAnimator, chargingBool, false);
     }
 
     private void UpdateChargeVisuals()
@@ -237,6 +267,7 @@ public class Skill_rail : MonoBehaviour
         void RailGun()
         {
             RailBullet = Instantiate(bulletPrefab, firepos.position, firepos.rotation);
+            AnimatorUtil.Trigger(railAnimator, fireTrigger);
             if (muzzleLight == null) return;
 
             if (_flashCoroutine != null)

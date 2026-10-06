@@ -9,8 +9,7 @@ using UnityEngine.SceneManagement;
 /// ─── SETUP ──────────────────────────────────────────────────────────────────
 ///   • One per gameplay scene (already in TestPlace).
 ///   • goMenu          : OPTIONAL pause panel. Shown on Esc, hidden on resume.
-///   • gameOverScreen  : drag the GameOverScreen object here
-///                       (Tools > DoomDrawing > Create Gameplay UI does it for you).
+///   • gameOverScreen  : drag the object that has GameOverScreen (your team's death screen).
 ///   • mainMenuSceneName must match the menu scene in Build Settings ("GameMenu").
 ///
 /// ─── COINS ──────────────────────────────────────────────────────────────────
@@ -174,7 +173,6 @@ public class GameManager : MonoBehaviour
         if (gameOverScreen != null)
             gameOverScreen.Show(WavesCleared, Kills, RunCoins, MetaProgression.Coins);
         else
-            Debug.LogWarning("[GameManager] Player died but no GameOverScreen is assigned. " +
-                             "Run Tools > DoomDrawing > Create Gameplay UI.");
+            Debug.LogWarning("[GameManager] Player died but no GameOverScreen is assigned on GameManager.");
     }
 }
