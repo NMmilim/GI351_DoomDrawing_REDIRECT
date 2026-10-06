@@ -1459,6 +1459,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &899090174
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 899090166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94b4411a92a71c94ebb0e6c77b98be60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimationAudioBridge
 --- !u!1 &902700663
 GameObject:
   m_ObjectHideFlags: 0
@@ -2982,6 +2994,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.size
+      value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: soundEffects.Array.data[0].groupID
       value: Pistol_Fire
       objectReference: {fileID: 0}
@@ -2990,13 +3006,57 @@ PrefabInstance:
       value: Railgun_Fire
       objectReference: {fileID: 0}
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[8].groupID
+      value: Mag_Out
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[9].groupID
+      value: Mag_In
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[10].groupID
+      value: NPC_Pistol_Fire
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: soundEffects.Array.data[0].clips.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[7].clips.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[8].clips.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[9].clips.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: soundEffects.Array.data[10].clips.Array.size
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: 'soundEffects.Array.data[0].clips.Array.data[0]'
       value: 
       objectReference: {fileID: 8300000, guid: 4ec1ccc025f4b6241bedc1235c8aad34, type: 3}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: 'soundEffects.Array.data[7].clips.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: a6783dd0a0cdb21438c1c71569b2d03b, type: 3}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: 'soundEffects.Array.data[8].clips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 81cc27322eea7464397560e5ceb32955, type: 3}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: 'soundEffects.Array.data[9].clips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: d55885275d8db7c4f8a3ac15741292a0, type: 3}
+    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
+      propertyPath: 'soundEffects.Array.data[10].clips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: c405ba6688f038a41be22e791a1be8ad, type: 3}
     - target: {fileID: 5991672812625611989, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: m_Name
       value: AudioManager
@@ -4801,7 +4861,7 @@ SpriteRenderer:
   m_Size: {x: 6.8, y: 12.53}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
 --- !u!4 &2094575234
 Transform:
@@ -5164,6 +5224,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 898754098581092283, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       insertIndex: -1
       addedObject: {fileID: 899090170}
+    - targetCorrespondingSourceObject: {fileID: 898754098581092283, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 899090174}
   m_SourcePrefab: {fileID: 100100000, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
