@@ -116,6 +116,7 @@ MonoBehaviour:
   laserColor: {r: 1, g: 0.9, b: 0.5, a: 0.9}
   laserWidth: 0.03
   laserPulseSpeed: 3
+  showLaser: 0
   coneSortingLayer: Default
   coneSortingOrder: -1
 --- !u!1 &5109805960384263259
@@ -145,8 +146,8 @@ Transform:
   m_GameObject: {fileID: 5109805960384263259}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: 0.75445837, w: 0.656348}
-  m_LocalPosition: {x: 1.153, y: 0.332, z: 0}
-  m_LocalScale: {x: 1.4092115, y: 0.12335615, z: 1}
+  m_LocalPosition: {x: 0.9733, y: 0.3038, z: 0}
+  m_LocalScale: {x: 1.4021654, y: 0.20499611, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3609712822736093487}
@@ -159,7 +160,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5109805960384263259}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -226,7 +227,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 136
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2

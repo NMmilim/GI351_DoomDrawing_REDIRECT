@@ -1480,22 +1480,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &830053692 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8395696885216379161, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-  m_PrefabInstance: {fileID: 8404270451384026102}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 073797afb82c5a1438f328866b10b3f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.Light2D
---- !u!95 &899090170 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 6097726158961910661, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-  m_PrefabInstance: {fileID: 8404270451384026102}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &902700663
 GameObject:
   m_ObjectHideFlags: 0
@@ -2780,6 +2764,7 @@ MonoBehaviour:
   delayBetweenWaves: 2
   waitForWaveClear: 1
   offerUpgradesBetweenWaves: 1
+  spawnPoints: []
   spawnRadius: 1.5
   initialDelay: 1.4
   loopWaves: 1
@@ -4461,7 +4446,7 @@ Transform:
   m_GameObject: {fileID: 1988822244}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.015, y: -0.015, z: 0}
+  m_LocalPosition: {x: -0.443, y: 0.01, z: 0}
   m_LocalScale: {x: 25.992, y: 9.85, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4934,21 +4919,13 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3757176580905902817, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
+    - target: {fileID: 2898365807244112054, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 84.1
       objectReference: {fileID: 0}
-    - target: {fileID: 3990512865045316199, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.058678843
-      objectReference: {fileID: 0}
-    - target: {fileID: 3990512865045316199, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.058678843
-      objectReference: {fileID: 0}
-    - target: {fileID: 3990512865045316199, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.058678843
+    - target: {fileID: 2898365807244112054, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -223.9
       objectReference: {fileID: 0}
     - target: {fileID: 3990512865045316199, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4990,41 +4967,13 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: gunAnimator
-      value: 
-      objectReference: {fileID: 899090170}
-    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: muzzleLight
-      value: 
-      objectReference: {fileID: 830053692}
-    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: bulletPrefab
-      value: 
-      objectReference: {fileID: 5188104836314514803, guid: 6ef3c2b2f2397fe4185081a65abef309, type: 3}
-    - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: autoReloadWhenEmpty
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5384159810427250356, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+    - target: {fileID: 8561894167642119458, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.55
+      value: 84.09999
       objectReference: {fileID: 0}
-    - target: {fileID: 5384159810427250356, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
+    - target: {fileID: 8561894167642119458, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9.69
-      objectReference: {fileID: 0}
-    - target: {fileID: 6345590330961849376, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7897874858933878145, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: bullet
-      value: 
-      objectReference: {fileID: 5188104836314514803, guid: 6ef3c2b2f2397fe4185081a65abef309, type: 3}
-    - target: {fileID: 9043898355282506306, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
-      propertyPath: m_Constraints
-      value: 4
+      value: -223.89998
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
