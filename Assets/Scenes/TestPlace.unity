@@ -5004,7 +5004,7 @@ PrefabInstance:
       objectReference: {fileID: 5188104836314514803, guid: 6ef3c2b2f2397fe4185081a65abef309, type: 3}
     - target: {fileID: 4303772989810454508, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: autoReloadWhenEmpty
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5384159810427250356, guid: 63f381178b2292b4794e1cac07cd39ed, type: 3}
       propertyPath: m_LocalPosition.x

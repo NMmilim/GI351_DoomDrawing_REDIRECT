@@ -241,6 +241,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 1
     m_ConditionEvent: IsReloading
     m_EventTreshold: 0
+  - m_ConditionMode: 3
+    m_ConditionEvent: ReloadSpeed
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -157023287787123241}
   m_Solo: 0
@@ -330,7 +333,7 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: ReloadSpeed
     m_Type: 1
-    m_DefaultFloat: 1
+    m_DefaultFloat: 0.95
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
@@ -462,6 +465,9 @@ AnimatorStateTransition:
   m_Conditions:
   - m_ConditionMode: 2
     m_ConditionEvent: IsReloading
+    m_EventTreshold: 0
+  - m_ConditionMode: 1
+    m_ConditionEvent: RailCancel
     m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -4883322126186200466}
