@@ -60,7 +60,10 @@ public class EnemySpawner : MonoBehaviour
     // -----------------------------------------------------------------
 
     [Header("Spawn Settings")]
-    [Tooltip("Enemies appear at a random position within this radius of the spawner.")]
+    [Tooltip("List of transforms to spawn enemies at. If empty, uses the spawner's own position.")]
+    public Transform[] spawnPoints;
+
+    [Tooltip("Enemies appear at a random position within this radius of the chosen spawn point.")]
     public float spawnRadius = 1.5f;
 
     [Tooltip("Seconds after scene start before the first wave spawns.")]
@@ -180,9 +183,20 @@ public class EnemySpawner : MonoBehaviour
 
     private void SpawnEnemy(GameObject prefab)
     {
+        Transform spawnOrigin = transform;
+        if (spawnPoints != null && spawnPoints.Length > 0)
+        {
+            // Pick a random spawn point that isn't null
+            var validPoints = new List<Transform>();
+            foreach(var p in spawnPoints) if (p != null) validPoints.Add(p);
+            
+            if (validPoints.Count > 0)
+                spawnOrigin = validPoints[Random.Range(0, validPoints.Count)];
+        }
+
         // Random 2D position within spawnRadius
         Vector2 offset   = Random.insideUnitCircle * spawnRadius;
-        Vector3 spawnPos = transform.position + new Vector3(offset.x, offset.y, 0f);
+        Vector3 spawnPos = spawnOrigin.position + new Vector3(offset.x, offset.y, 0f);
 
         // Snap to the nearest walkable A* graph node so the enemy always
         // starts on valid pathfinding ground — no coordinate remapping needed.
@@ -232,14 +246,29 @@ public class EnemySpawner : MonoBehaviour
 #if UNITY_EDITOR
     private void OnDrawGizmos()
     {
+        if (spawnPoints != null && spawnPoints.Length > 0)
+        {
+            foreach (Transform t in spawnPoints)
+            {
+                if (t != null) DrawSpawnGizmo(t.position);
+            }
+        }
+        else
+        {
+            DrawSpawnGizmo(transform.position);
+        }
+    }
+
+    private void DrawSpawnGizmo(Vector3 pos)
+    {
         Gizmos.color = new Color(0.3f, 0.8f, 1f, 0.3f);
-        Gizmos.DrawSphere(transform.position, spawnRadius);
+        Gizmos.DrawSphere(pos, spawnRadius);
         Gizmos.color = new Color(0.3f, 0.8f, 1f, 0.9f);
-        Gizmos.DrawWireSphere(transform.position, spawnRadius);
+        Gizmos.DrawWireSphere(pos, spawnRadius);
         Gizmos.color = Color.cyan;
         float s = 0.3f;
-        Gizmos.DrawLine(transform.position - Vector3.right * s, transform.position + Vector3.right * s);
-        Gizmos.DrawLine(transform.position - Vector3.up    * s, transform.position + Vector3.up    * s);
+        Gizmos.DrawLine(pos - Vector3.right * s, pos + Vector3.right * s);
+        Gizmos.DrawLine(pos - Vector3.up    * s, pos + Vector3.up    * s);
     }
 #endif
 }
