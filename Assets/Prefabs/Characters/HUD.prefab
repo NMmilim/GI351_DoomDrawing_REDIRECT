@@ -4008,7 +4008,6 @@ GameObject:
   - component: {fileID: 1573375172112757801}
   - component: {fileID: 3952664483596178091}
   - component: {fileID: 7377054214220115233}
-  - component: {fileID: 4994183794809075843}
   m_Layer: 5
   m_Name: Upgrade
   m_TagString: Untagged
@@ -4102,60 +4101,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &4994183794809075843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8171057803529874940}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d95e308c4b8e1648b1474059dee2eb4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UpgradeManager
-  panel: {fileID: 8171057803529874940}
-  cards:
-  - {fileID: 7871193735432231608}
-  - {fileID: 3100687375160439244}
-  - {fileID: 1307326824322007447}
-  stageText: {fileID: 8495641315718674843}
-  pool:
-  - type: 0
-    title: Ricochet+
-    description: Your bullets bounce off walls one more time before breaking.
-    rarity: 1
-    weight: 20
-    maxStacks: 0
-  - type: 1
-    title: Quick Trigger
-    description: Shoot faster. Lowers the delay between pistol shots.
-    rarity: 0
-    weight: 30
-    maxStacks: 8
-  - type: 2
-    title: Light Feet
-    description: Move faster around the arena.
-    rarity: 0
-    weight: 30
-    maxStacks: 8
-  - type: 4
-    title: Extended Mag
-    description: Fire more bullets before you have to reload.
-    rarity: 0
-    weight: 30
-    maxStacks: 0
-  - type: 3
-    title: Seeker Rounds
-    description: After hitting an enemy, your bullet ricochets straight into the
-      next enemy instead of bouncing off at an angle. Uses your ricochet count.
-    rarity: 3
-    weight: 3
-    maxStacks: 1
-  commonColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  rareColor: {r: 0.3, g: 0.65, b: 1, a: 1}
-  epicColor: {r: 0.7, g: 0.35, b: 1, a: 1}
-  legendaryColor: {r: 1, g: 0.75, b: 0.15, a: 1}
 --- !u!1 &8363063979352657295
 GameObject:
   m_ObjectHideFlags: 0
