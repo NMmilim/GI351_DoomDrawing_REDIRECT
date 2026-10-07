@@ -207,6 +207,15 @@ MonoBehaviour:
   - groupID: Railgun_Charge
     clips:
     - {fileID: 8300000, guid: a6783dd0a0cdb21438c1c71569b2d03b, type: 3}
+  - groupID: Mag_Out
+    clips:
+    - {fileID: 8300000, guid: 81cc27322eea7464397560e5ceb32955, type: 3}
+  - groupID: Mag_In
+    clips:
+    - {fileID: 8300000, guid: d55885275d8db7c4f8a3ac15741292a0, type: 3}
+  - groupID: NPC_Pistol_Fire
+    clips:
+    - {fileID: 8300000, guid: c405ba6688f038a41be22e791a1be8ad, type: 3}
 --- !u!114 &3954555000660303314
 MonoBehaviour:
   m_ObjectHideFlags: 0

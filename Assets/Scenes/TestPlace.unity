@@ -2543,14 +2543,6 @@ PrefabInstance:
       value: 11
       objectReference: {fileID: 0}
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
-      propertyPath: soundEffects.Array.data[0].groupID
-      value: Pistol_Fire
-      objectReference: {fileID: 0}
-    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
-      propertyPath: soundEffects.Array.data[1].groupID
-      value: Railgun_Fire
-      objectReference: {fileID: 0}
-    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: soundEffects.Array.data[8].groupID
       value: Mag_Out
       objectReference: {fileID: 0}
@@ -2561,14 +2553,6 @@ PrefabInstance:
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: soundEffects.Array.data[10].groupID
       value: NPC_Pistol_Fire
-      objectReference: {fileID: 0}
-    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
-      propertyPath: soundEffects.Array.data[0].clips.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
-      propertyPath: soundEffects.Array.data[7].clips.Array.size
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: soundEffects.Array.data[8].clips.Array.size
@@ -2582,14 +2566,6 @@ PrefabInstance:
       propertyPath: soundEffects.Array.data[10].clips.Array.size
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
-      propertyPath: 'soundEffects.Array.data[0].clips.Array.data[0]'
-      value: 
-      objectReference: {fileID: 8300000, guid: 4ec1ccc025f4b6241bedc1235c8aad34, type: 3}
-    - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
-      propertyPath: 'soundEffects.Array.data[7].clips.Array.data[1]'
-      value: 
-      objectReference: {fileID: 8300000, guid: a6783dd0a0cdb21438c1c71569b2d03b, type: 3}
     - target: {fileID: 4516496621385920091, guid: 0c45a80d65b95c9408e0571569096663, type: 3}
       propertyPath: 'soundEffects.Array.data[8].clips.Array.data[0]'
       value: 
