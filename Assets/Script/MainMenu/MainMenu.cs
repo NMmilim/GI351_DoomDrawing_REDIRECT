@@ -22,7 +22,7 @@ public class MainMenu : MonoBehaviour
 
     public void Tutorial()
     {
-        LevelManager.Instance.LoadScene("tutorial", "CrossFade");
+        LevelManager.Instance.LoadScene("TestPlace", "CrossFade");
     }
 
     public void Quit()

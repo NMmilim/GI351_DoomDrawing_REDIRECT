@@ -70,8 +70,17 @@ public class Bullet : MonoBehaviour
 
         if (enemy != null)
         {
-            HitEnemy(enemy, hit);
-            return;
+            // If the hit object is the shield (either named "rw" or on the "Wall" layer), 
+            // treat it as a wall bounce instead of damaging the enemy.
+            if (hit.collider.name == "rw" || hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
+            {
+                // Skip HitEnemy, fall through to HitWall
+            }
+            else
+            {
+                HitEnemy(enemy, hit);
+                return;
+            }
         }
 
         //if (player != null)
