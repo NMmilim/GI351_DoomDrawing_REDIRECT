@@ -4747,8 +4747,16 @@ PrefabInstance:
     m_TransformParent: {fileID: 1126991311}
     m_Modifications:
     - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
+      propertyPath: delayBetweenWaves
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: spawnPoints.Array.size
       value: 11
+      objectReference: {fileID: 0}
+    - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
+      propertyPath: loopDifficultyMultiplier
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: 'spawnPoints.Array.data[0]'
@@ -4794,6 +4802,10 @@ PrefabInstance:
       propertyPath: 'spawnPoints.Array.data[10]'
       value: 
       objectReference: {fileID: 357311575}
+    - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
+      propertyPath: waves.Array.data[0].enemyCount
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 1752853005184988644, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: m_LocalPosition.x
       value: -9.592209
@@ -18138,6 +18150,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdb1a290b1cbd5847bf37f7e06a1f3b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
+--- !u!4 &851672775 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2352309480468909477, guid: 8896588c408b2324785645d1503a1feb, type: 3}
+  m_PrefabInstance: {fileID: 1531399884}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &859360270
 GameObject:
   m_ObjectHideFlags: 0
@@ -32712,7 +32729,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2352309480468909477, guid: 8896588c408b2324785645d1503a1feb, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1665484388}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8896588c408b2324785645d1503a1feb, type: 3}
 --- !u!1 &1532965099
@@ -34957,6 +34977,66 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1416328313}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1665484387
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1665484388}
+  - component: {fileID: 1665484389}
+  m_Layer: 0
+  m_Name: EnemyIndicators
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1665484388
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665484387}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 851672775}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1665484389
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1665484387}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 994b1040389b56b43908a6021e5ae93a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyIndicator
+  enemyThreshold: 6
+  mode: 0
+  hideWhenOnScreen: 1
+  onScreenHoverHeight: 1.2
+  screenMargin: 0.8
+  playerOrbitRadius: 2.2
+  customArrowSprite: {fileID: 0}
+  arrowColor: {r: 1, g: 0.45, b: 0.1, a: 0.95}
+  arrowScale: 0.65
+  sortingLayerName: Default
+  sortingOrder: 1000
+  enablePulse: 1
+  pulseSpeed: 4
+  pulseAmount: 0.15
+  player: {fileID: 0}
+  targetCamera: {fileID: 0}
 --- !u!1 &1667903587
 GameObject:
   m_ObjectHideFlags: 0
