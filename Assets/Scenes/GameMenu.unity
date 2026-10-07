@@ -3801,7 +3801,7 @@ PrefabInstance:
       objectReference: {fileID: 8965377220337840320, guid: e53713eb0249cca46a60f90f97634e65, type: 2}
     - target: {fileID: 5709947317667054741, guid: f657b1ba17d58be4d893b145b1a5f976, type: 3}
       propertyPath: m_hasFontAssetChanged
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7680351269530935871, guid: f657b1ba17d58be4d893b145b1a5f976, type: 3}
       propertyPath: m_Pivot.x
@@ -6142,7 +6142,7 @@ PrefabInstance:
       objectReference: {fileID: 8965377220337840320, guid: e53713eb0249cca46a60f90f97634e65, type: 2}
     - target: {fileID: 5709947317667054741, guid: f657b1ba17d58be4d893b145b1a5f976, type: 3}
       propertyPath: m_hasFontAssetChanged
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7680351269530935871, guid: f657b1ba17d58be4d893b145b1a5f976, type: 3}
       propertyPath: m_Pivot.x
@@ -6957,7 +6957,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1794659777
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7817,7 +7817,7 @@ PrefabInstance:
       objectReference: {fileID: 8965377220337840320, guid: e53713eb0249cca46a60f90f97634e65, type: 2}
     - target: {fileID: 5709947317667054741, guid: f657b1ba17d58be4d893b145b1a5f976, type: 3}
       propertyPath: m_hasFontAssetChanged
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7680351269530935871, guid: f657b1ba17d58be4d893b145b1a5f976, type: 3}
       propertyPath: m_Pivot.x
