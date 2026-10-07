@@ -5332,6 +5332,22 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 875423921}
     - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].eventID
+      value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 875423921}
@@ -5339,6 +5355,30 @@ PrefabInstance:
       propertyPath: m_Delegates.Array.data[1].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 875423921}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 1546477817}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ResumeGame
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GameManager, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_StringArgument
+      value: Hover
+      objectReference: {fileID: 0}
+    - target: {fileID: 1303292604719152393, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
+      propertyPath: m_Delegates.Array.data[2].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3062256553802396184, guid: 3834f19fe4950d94484a07d5a7668ed3, type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
