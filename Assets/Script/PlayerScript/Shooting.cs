@@ -41,7 +41,7 @@ public class Shooting : MonoBehaviour
     [SerializeField] private float peakIntensity = 8f;
     [SerializeField] private float flashDuration = 0.08f;
 
-           public Transform firepos;
+    public Transform firepos;
 
     [Header("Magazine / Reload")]
     [Tooltip("Seconds needed to reload a full magazine.")]
@@ -136,39 +136,39 @@ public class Shooting : MonoBehaviour
         }
     }
 
-        void Fire()
+    private void Fire()
+    {
+        CurrentAmmo--;
+        float interval = PlayerManagement.Instance != null ? PlayerManagement.Instance.fireInterval : 0.25f;
+        _nextShotTime = Time.time + interval;
+
+        Instantiate(bulletPrefab, firepos.position, transform.rotation);
+        AnimatorUtil.Trigger(gunAnimator, fireTrigger);
+
+        SoundManager.Instance?.PlaySound3D("Pistol_Fire", firepos.position);
+        if (muzzleLight != null)
         {
-            CurrentAmmo--;
-            float interval = PlayerManagement.Instance != null ? PlayerManagement.Instance.fireInterval : 0.25f;
-            _nextShotTime = Time.time + interval;
-
-            Instantiate(bulletPrefab, firepos.position, transform.rotation);
-            AnimatorUtil.Trigger(gunAnimator, fireTrigger);
-
-            SoundManager.Instance?.PlaySound3D("Pistol_Fire", firepos.position);
-            if (muzzleLight != null)
-            {
-                if (_flashCoroutine != null)
-                    StopCoroutine(_flashCoroutine);
-                _flashCoroutine = StartCoroutine(MuzzleFlashLight());
-            }
-
-            OnAmmoChanged?.Invoke();
+            if (_flashCoroutine != null)
+                StopCoroutine(_flashCoroutine);
+            _flashCoroutine = StartCoroutine(MuzzleFlashLight());
         }
 
-        IEnumerator MuzzleFlashLight()
+        OnAmmoChanged?.Invoke();
+    }
+
+    private IEnumerator MuzzleFlashLight()
+    {
+        muzzleLight.intensity = peakIntensity;
+        float elapsed = 0f;
+        while (elapsed < flashDuration)
         {
-            muzzleLight.intensity = peakIntensity;
-            float elapsed = 0f;
-            while (elapsed < flashDuration) 
-            {
-                elapsed += Time.deltaTime;
-                muzzleLight.intensity = Mathf.Lerp(peakIntensity, 0f, elapsed / flashDuration);
-                yield return null;
-            }
-            muzzleLight.intensity = 0f;
-            _flashCoroutine = null;
+            elapsed += Time.deltaTime;
+            muzzleLight.intensity = Mathf.Lerp(peakIntensity, 0f, elapsed / flashDuration);
+            yield return null;
         }
+        muzzleLight.intensity = 0f;
+        _flashCoroutine = null;
+    }
 
     // -----------------------------------------------------------------
     //  Reload

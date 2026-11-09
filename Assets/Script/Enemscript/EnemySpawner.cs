@@ -18,8 +18,28 @@ using Pathfinding;   // A* Pathfinding Project — for AstarPath.active.GetNeare
 public class EnemySpawner : MonoBehaviour
 {
     // -----------------------------------------------------------------
-    //  Wave Definition
+    //  Wave & Spawn Set Definitions
     // -----------------------------------------------------------------
+
+    [System.Serializable]
+    public class WaveSpawnSet
+    {
+        [Tooltip("Optional label for this spawn set within a wave (e.g. 'Ranged Squad', 'Shielded Elites').")]
+        public string setName = "Set";
+
+        [Tooltip("Enemy prefab to spawn in this set.")]
+        public GameObject enemyPrefab;
+
+        [Tooltip("How many enemies spawn in this set.")]
+        [Range(1, 50)]
+        public int enemyCount = 3;
+
+        [Tooltip("Seconds between each individual enemy spawn in this set.")]
+        public float spawnInterval = 0.8f;
+
+        [Tooltip("Seconds to wait after finishing this set before starting the next set in the same wave.")]
+        public float delayAfterSet = 1.5f;
+    }
 
     [System.Serializable]
     public class Wave
@@ -27,15 +47,18 @@ public class EnemySpawner : MonoBehaviour
         [Tooltip("Display name shown in logs (optional).")]
         public string waveName = "Wave";
 
-        [Tooltip("Enemy prefab to spawn. Must have Enemy_Range and AIPath components.")]
+        [Tooltip("Legacy single-prefab wave setting (used if spawnSets is empty).")]
         public GameObject enemyPrefab;
 
-        [Tooltip("How many enemies spawn in this wave.")]
+        [Tooltip("How many enemies spawn in this wave (used if spawnSets is empty).")]
         [Range(1, 50)]
         public int enemyCount = 3;
 
-        [Tooltip("Seconds between each individual enemy spawn.")]
+        [Tooltip("Seconds between each individual enemy spawn (used if spawnSets is empty).")]
         public float spawnInterval = 1f;
+
+        [Tooltip("Optional: Define multiple sets/batches of enemies within this wave.")]
+        public WaveSpawnSet[] spawnSets;
     }
 
     // -----------------------------------------------------------------
@@ -126,20 +149,46 @@ public class EnemySpawner : MonoBehaviour
                 _currentWaveIndex = waveIdx;
                 Wave wave = waves[waveIdx];
 
-                if (wave.enemyPrefab == null)
+                bool useSets = wave.spawnSets != null && wave.spawnSets.Length > 0;
+                if (!useSets && wave.enemyPrefab == null)
                 {
-                    Debug.LogWarning($"[EnemySpawner] Wave '{wave.waveName}' has no prefab — skipping.");
+                    Debug.LogWarning($"[EnemySpawner] Wave '{wave.waveName}' has no prefab or spawn sets — skipping.");
                     continue;
                 }
 
-                int count = Mathf.RoundToInt(wave.enemyCount * Mathf.Pow(loopDifficultyMultiplier, _loopCount));
-                Debug.Log($"[EnemySpawner] Starting {wave.waveName} — {count} enemies.");
+                float loopScale = Mathf.Pow(loopDifficultyMultiplier, _loopCount);
 
-                for (int i = 0; i < count; i++)
+                if (useSets)
                 {
-                    SpawnEnemy(wave.enemyPrefab);
-                    if (i < count - 1)
-                        yield return new WaitForSeconds(wave.spawnInterval);
+                    Debug.Log($"[EnemySpawner] Starting {wave.waveName} ({wave.spawnSets.Length} sets).");
+                    for (int s = 0; s < wave.spawnSets.Length; s++)
+                    {
+                        WaveSpawnSet set = wave.spawnSets[s];
+                        if (set == null || set.enemyPrefab == null) continue;
+
+                        int setCount = Mathf.RoundToInt(set.enemyCount * loopScale);
+                        for (int i = 0; i < setCount; i++)
+                        {
+                            SpawnEnemy(set.enemyPrefab);
+                            if (i < setCount - 1 && set.spawnInterval > 0f)
+                                yield return new WaitForSeconds(set.spawnInterval);
+                        }
+
+                        if (s < wave.spawnSets.Length - 1 && set.delayAfterSet > 0f)
+                            yield return new WaitForSeconds(set.delayAfterSet);
+                    }
+                }
+                else
+                {
+                    int count = Mathf.RoundToInt(wave.enemyCount * loopScale);
+                    Debug.Log($"[EnemySpawner] Starting {wave.waveName} — {count} enemies.");
+
+                    for (int i = 0; i < count; i++)
+                    {
+                        SpawnEnemy(wave.enemyPrefab);
+                        if (i < count - 1)
+                            yield return new WaitForSeconds(wave.spawnInterval);
+                    }
                 }
 
                 if (waitForWaveClear)

@@ -57,11 +57,10 @@ public class Bullet : MonoBehaviour
         if (lifetime > 0f) Destroy(gameObject, lifetime);
     }
 
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        
-        transform.Translate(Vector3.up * Time.deltaTime * speed);
-        
+        transform.Translate(Vector3.up * (Time.deltaTime * speed));
+
         if (!CastNearest(transform.position, transform.up, Time.deltaTime * speed + 0.1f, out RaycastHit2D hit))
             return;
 
@@ -70,7 +69,7 @@ public class Bullet : MonoBehaviour
 
         if (enemy != null)
         {
-            // If the hit object is the shield (either named "rw" or on the "Wall" layer), 
+            // If the hit object is the shield (either named "rw" or on the "Wall" layer),
             // treat it as a wall bounce instead of damaging the enemy.
             if (hit.collider.name == "rw" || hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall"))
             {
@@ -82,13 +81,6 @@ public class Bullet : MonoBehaviour
                 return;
             }
         }
-
-        //if (player != null)
-        //{
-        //    player.RegisterHit();hj
-        //    Destroy(gameObject);
-        //    return;
-        //}
 
         HitWall(hit);
     }

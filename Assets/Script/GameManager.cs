@@ -56,14 +56,13 @@ public class GameManager : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
-    void Start()
+    private void Start()
     {
-       _player = GameObject.FindGameObjectWithTag("Player");
+        _player = GameObject.FindGameObjectWithTag("Player");
         if (goMenu != null) goMenu.SetActive(false);
     }
 
-    
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -72,38 +71,38 @@ public class GameManager : MonoBehaviour
             if (UpgradeManager.Instance != null && UpgradeManager.Instance.IsOpen) return;
 
             pause = !pause;
-            
             GamePause();
-           
         }
-
-    
     }
-    void GamePause()
+
+    private void GamePause()
     {
         if (pause) PauseGame();
         else ResumeGame();
     }
 
-    void PauseGame()
+    private void PauseGame()
     {
-    Time.timeScale = 0f;
+        Time.timeScale = 0f;
         if (goMenu != null) goMenu.SetActive(true);
     }
+
     public void ResumeGame()
     {
-    pause = false;
-    Time.timeScale = 1f;
+        pause = false;
+        Time.timeScale = 1f;
         if (goMenu != null) goMenu.SetActive(false);
     }
+
     public void RestartGame()
     {
-    Time.timeScale = 1f;
-    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
     public void QuitGame()
     {
-    Application.Quit();
+        Application.Quit();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #endif

@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
@@ -264,29 +263,29 @@ public class Skill_rail : MonoBehaviour
     //  Fire (original logic)
     // -----------------------------------------------------------------
 
-        void RailGun()
+    private void RailGun()
+    {
+        RailBullet = Instantiate(bulletPrefab, firepos.position, firepos.rotation);
+        AnimatorUtil.Trigger(railAnimator, fireTrigger);
+        if (muzzleLight == null) return;
+
+        if (_flashCoroutine != null)
+            StopCoroutine(_flashCoroutine);
+
+        _flashCoroutine = StartCoroutine(MuzzleFlashLight());
+    }
+
+    private IEnumerator MuzzleFlashLight()
+    {
+        muzzleLight.intensity = peakIntensity;
+        float elapsed = 0f;
+        while (elapsed < flashDuration)
         {
-            RailBullet = Instantiate(bulletPrefab, firepos.position, firepos.rotation);
-            AnimatorUtil.Trigger(railAnimator, fireTrigger);
-            if (muzzleLight == null) return;
-
-            if (_flashCoroutine != null)
-
-                StopCoroutine(_flashCoroutine);
-
-            _flashCoroutine = StartCoroutine(MuzzleFlashLight());
+            elapsed += Time.deltaTime;
+            muzzleLight.intensity = Mathf.Lerp(peakIntensity, 0f, elapsed / flashDuration);
+            yield return null;
         }
-        IEnumerator MuzzleFlashLight()
-        {
-            muzzleLight.intensity = peakIntensity;
-            float elapsed = 0f;
-            while (elapsed < flashDuration)
-            {
-                elapsed += Time.deltaTime;
-                muzzleLight.intensity = Mathf.Lerp(peakIntensity, 0f, elapsed / flashDuration);
-                yield return null;
-            }
-            muzzleLight.intensity = 0f;
-            _flashCoroutine = null;
-        }
+        muzzleLight.intensity = 0f;
+        _flashCoroutine = null;
+    }
 }

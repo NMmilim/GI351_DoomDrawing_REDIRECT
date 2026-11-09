@@ -41,8 +41,8 @@ public class PlayerManagement : MonoBehaviour
     [Header("Player Combat stats")]
     public int dmg;
     [Tooltip("Railgun cooldown = cooldown x 3 seconds (starts after the shot leaves the barrel).")]
-    public float cooldown=1;
-   public float nextFireTime=0;
+    public float cooldown = 1f;
+    public float nextFireTime = 0f;
     [Tooltip("FINAL bullets per magazine (calculated at runtime).")]
     public int   magazineSize;
     [Tooltip("FINAL seconds between pistol shots (calculated at runtime).")]

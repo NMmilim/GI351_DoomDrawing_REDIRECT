@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Player damage / heal entry point.
@@ -10,7 +9,6 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class Player : MonoBehaviour
 {
-
     public void RegisterHit(int amount)
     {
         PlayerManagement pm = PlayerManagement.Instance;
@@ -21,9 +19,9 @@ public class Player : MonoBehaviour
         if (pm.hp <= 0)
         {
             Die();
-           // SceneManager.LoadScene(1);
         }
     }
+
     public void RegisterHeal(int amount)
     {
         PlayerManagement pm = PlayerManagement.Instance;
@@ -39,14 +37,14 @@ public class Player : MonoBehaviour
         if (rb != null) rb.linearVelocity = Vector2.zero;
 
         if (GameManager.Instance != null)
+        {
             GameManager.Instance.TriggerGameOver();
+        }
         else
         {
             Debug.LogWarning("[Player] Died but no GameManager in scene — pausing instead.");
-            Time.timeScale = 0;
+            Time.timeScale = 0f;
         }
     }
-   
 }
-    
-   
+
