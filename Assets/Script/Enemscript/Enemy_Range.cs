@@ -49,7 +49,7 @@ using Pathfinding;   // A* Pathfinding Project
 /// </summary>
 [RequireComponent(typeof(AIPath))]
 [RequireComponent(typeof(Seeker))]
-public class Enemy_Range : MonoBehaviour
+public class Enemy_Range : MonoBehaviour, IDamageable
 {
     // -----------------------------------------------------------------
     //  Inspector - References
@@ -115,6 +115,26 @@ public class Enemy_Range : MonoBehaviour
 
     [Tooltip("Degrees per second the body rotates toward the aim direction.")]
     public float aimRotationSpeed = 240f;
+
+    // -----------------------------------------------------------------
+    //  Inspector - Aim Telegraph / Firing Delay
+    // -----------------------------------------------------------------
+
+    [Header("Aim Telegraph (Firing Delay)")]
+    [Tooltip("Seconds the enemy aims with a visible telegraph line before firing.")]
+    public float fireDelay = 0.5f;
+
+    [Tooltip("LineRenderer used to show the aim line. Auto-created if null.")]
+    public LineRenderer aimLine;
+
+    [Tooltip("Color of the telegraph aim laser line.")]
+    public Color aimLineColor = new Color(1f, 0.2f, 0.2f, 0.85f);
+
+    [Tooltip("Width of the telegraph aim laser line.")]
+    public float aimLineWidth = 0.04f;
+
+    [Tooltip("Maximum length of the telegraph line in world units.")]
+    public float aimLineMaxLength = 25f;
 
     // -----------------------------------------------------------------
     //  Inspector - Detection / Noticing
@@ -238,6 +258,17 @@ public class Enemy_Range : MonoBehaviour
     private bool _spawnRoamTriggered;
 
     // -----------------------------------------------------------------
+    //  Private - Aim Telegraph
+    // -----------------------------------------------------------------
+
+    private Rigidbody2D _rb;
+    private bool        _isAiming;
+    private float       _aimTimer;
+    private Vector2     _lockedAimDir;
+    private Vector3     _aimLineStart;
+    private Vector3     _aimLineEnd;
+
+    // -----------------------------------------------------------------
     //  Static - Team Alert
     // -----------------------------------------------------------------
 
@@ -258,7 +289,11 @@ public class Enemy_Range : MonoBehaviour
     public bool IsDead => _dead;
 
     private void OnEnable()  { if (!Active.Contains(this)) Active.Add(this); }
-    private void OnDisable() { Active.Remove(this); }
+    private void OnDisable()
+    {
+        Active.Remove(this);
+        HideAimLine();
+    }
 
     // -----------------------------------------------------------------
     //  Unity Messages
@@ -267,6 +302,7 @@ public class Enemy_Range : MonoBehaviour
     private void Awake()
     {
         _ai  = GetComponent<AIPath>();
+        _rb  = GetComponent<Rigidbody2D>();
         _fov = GetComponentInChildren<EnemyFOV>();
 
         // 2D configuration for AIPath
@@ -278,6 +314,10 @@ public class Enemy_Range : MonoBehaviour
     private void Start()
     {
         _hp = maxHp;
+
+        if (aimLine == null)
+            aimLine = CreateAimLine();
+        HideAimLine();
 
         GameObject playerGO = GameObject.FindWithTag("Player");
         if (playerGO != null)
@@ -351,6 +391,7 @@ public class Enemy_Range : MonoBehaviour
 
     private void EnterSeekCover()
     {
+        HideAimLine();
         _state          = State.SeekCover;
         _seekCoverTimer = 4f;
         ResetStuckTimer();
@@ -394,6 +435,7 @@ public class Enemy_Range : MonoBehaviour
 
     private void EnterInCover()
     {
+        HideAimLine();
         _state      = State.InCover;
         _stateTimer = Random.Range(coverWaitMin, coverWaitMax);
 
@@ -464,7 +506,7 @@ public class Enemy_Range : MonoBehaviour
                     BroadcastTeamAlert();
                     _spawnRoamTriggered = true;
                     _lostSightTimer     = 0f;
-                    TakeShot();
+                    StartAiming();
                 }
             }
             else
@@ -474,22 +516,22 @@ public class Enemy_Range : MonoBehaviour
         }
         else
         {
-            // Phase 3: fire burst
-            if (_fireCooldown <= 0f && CanFire())
+            // Phase 3: fire burst with aim delay and telegraph
+            if (_isAiming)
+            {
+                TickAiming();
+            }
+            else if (_fireCooldown <= 0f && CanFire())
             {
                 _playerLastKnown = _player.position;
-                TakeShot();
-                if (_shotsThisPeek >= burstCount)
-                {
-                    EnterReturning();
-                    return;
-                }
+                StartAiming();
             }
         }
 
         // Timeout
         if (_stateTimer <= 0f)
         {
+            HideAimLine();
             if (_haveLastKnown) ShootAt(_playerLastKnown);
             EnterReturning();
         }
@@ -501,6 +543,7 @@ public class Enemy_Range : MonoBehaviour
 
     private void EnterReturning()
     {
+        HideAimLine();
         _state = State.Returning;
         StopMoving();
         SetFOVVisible(false);
@@ -526,6 +569,7 @@ public class Enemy_Range : MonoBehaviour
 
     private void EnterRoaming()
     {
+        HideAimLine();
         _state             = State.Roaming;
         _roamWaypointTimer = 0f;
         _lostSightTimer    = 0f;
@@ -670,6 +714,9 @@ public class Enemy_Range : MonoBehaviour
 
     private void UpdateBodyRotation()
     {
+        // When in shooting / aiming stage, stay completely frozen facing the locked direction
+        if (_isAiming) return;
+
         float targetAngle;
 
         if (_haveLastKnown || _state == State.Peeking)
@@ -721,11 +768,130 @@ public class Enemy_Range : MonoBehaviour
 
     private void ShootAt(Vector3 targetPos)
     {
+        HideAimLine();
         if (bulletPre == null || firepos == null) return;
         SoundManager.Instance.PlaySound3D("NPC_Pistol_Fire", firepos.position);
         Vector2 dir   = ((Vector2)targetPos - (Vector2)firepos.position).normalized;
         float   angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
         Instantiate(bulletPre, firepos.position, Quaternion.Euler(0f, 0f, angle));
+    }
+
+    // -----------------------------------------------------------------
+    //  Aim Telegraph & Firing Delay
+    // -----------------------------------------------------------------
+
+    private void StartAiming()
+    {
+        _isAiming = true;
+        _aimTimer = fireDelay;
+
+        // Freeze enemy movement and physics position completely during shooting stage
+        StopMoving();
+        if (_rb != null)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.constraints    = RigidbodyConstraints2D.FreezeAll;
+        }
+
+        // Lock aim direction on the player at the exact moment aiming begins
+        Vector2 origin = (firepos != null) ? (Vector2)firepos.position : (Vector2)transform.position;
+        Vector2 target = (_player != null) ? (Vector2)_player.position : (Vector2)_playerLastKnown;
+        _lockedAimDir  = (target - origin).normalized;
+        if (_lockedAimDir.sqrMagnitude < 0.001f) _lockedAimDir = transform.right;
+
+        // Snap body rotation to face the locked aim direction
+        float targetAngle = Mathf.Atan2(_lockedAimDir.y, _lockedAimDir.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.Euler(0f, 0f, targetAngle);
+
+        UpdateAimLine();
+    }
+
+    private void TickAiming()
+    {
+        // Keep laser pinned to muzzle position
+        UpdateAimLine();
+
+        _aimTimer -= Time.deltaTime;
+
+        if (_aimTimer <= 0f)
+        {
+            _isAiming = false;
+            HideAimLine();
+
+            // Shoot strictly along the locked aim direction
+            Vector3 shootTarget = (firepos != null ? firepos.position : transform.position) + (Vector3)(_lockedAimDir * 10f);
+            ShootAt(shootTarget);
+
+            // Once shot, return back to the state before (retreat behind cover)
+            EnterReturning();
+        }
+    }
+
+    private void HideAimLine()
+    {
+        _isAiming = false;
+        if (_rb != null)
+        {
+            _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
+        }
+        if (aimLine != null)
+            aimLine.enabled = false;
+    }
+
+    private void UpdateAimLine()
+    {
+        if (firepos == null) return;
+
+        Vector2 origin = firepos.position;
+        Vector2 dir    = (_lockedAimDir.sqrMagnitude > 0.001f) ? _lockedAimDir : (Vector2)transform.right;
+
+        float dist = aimLineMaxLength;
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, aimLineMaxLength, obstacleMask);
+        if (hit.collider != null)
+        {
+            dist = hit.distance;
+        }
+
+        _aimLineStart = origin;
+        _aimLineEnd   = origin + dir * dist;
+
+        if (aimLine != null)
+        {
+            aimLine.enabled = true;
+            aimLine.SetPosition(0, _aimLineStart);
+            aimLine.SetPosition(1, _aimLineEnd);
+        }
+    }
+
+    private LineRenderer CreateAimLine()
+    {
+        GameObject go = new GameObject("TelegraphAimLine");
+        go.transform.SetParent(transform, false);
+        LineRenderer lr = go.AddComponent<LineRenderer>();
+        lr.positionCount     = 2;
+        lr.useWorldSpace     = true;
+        lr.numCapVertices    = 2;
+        lr.startWidth        = aimLineWidth;
+        lr.endWidth          = aimLineWidth * 0.75f;
+        lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+        lr.receiveShadows    = false;
+        lr.sortingOrder      = 50;
+        Shader shader        = Shader.Find("Sprites/Default");
+        if (shader != null)
+        {
+            lr.material = new Material(shader) { color = aimLineColor };
+        }
+        lr.enabled = false;
+        return lr;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (_isAiming && firepos != null)
+        {
+            Gizmos.color = aimLineColor;
+            Gizmos.DrawLine(_aimLineStart, _aimLineEnd);
+        }
     }
 
     // -----------------------------------------------------------------
@@ -750,6 +916,7 @@ public class Enemy_Range : MonoBehaviour
         if (_hp <= 0)
         {
             _dead = true;
+            HideAimLine();
             Active.Remove(this);
             if (_currentCover != null) _currentCover.Release(this);
             if (GameManager.Instance != null) GameManager.Instance.OnEnemyKilled(coinReward);

@@ -39,7 +39,7 @@ public class Bullet : MonoBehaviour
 
     private int          _ricochetsLeft;
     private bool         _homing;
-    private Enemy_Range  _ignoreEnemy;     // enemy we just hit — don't hit it again immediately
+    private IDamageable  _ignoreEnemy;     // enemy we just hit — don't hit it again immediately
     private readonly RaycastHit2D[] _hitBuffer = new RaycastHit2D[8];
     private ContactFilter2D _filter;
 
@@ -65,7 +65,7 @@ public class Bullet : MonoBehaviour
             return;
 
         SoundManager.Instance?.PlaySound3D("Ricochet", transform.position);
-        Enemy_Range enemy = hit.collider.GetComponentInParent<Enemy_Range>();
+        IDamageable enemy = hit.collider.GetComponentInParent<IDamageable>();
 
         if (enemy != null)
         {
@@ -89,7 +89,7 @@ public class Bullet : MonoBehaviour
     //  Hits
     // -----------------------------------------------------------------
 
-    private void HitEnemy(Enemy_Range enemy, RaycastHit2D hit)
+    private void HitEnemy(IDamageable enemy, RaycastHit2D hit)
     {
         enemy.RegisterHit(PlayerManagement.Instance != null ? PlayerManagement.Instance.dmg : 1);
         SoundManager.Instance?.PlaySound3D("BulletImpactFlesh", transform.position);
@@ -98,14 +98,14 @@ public class Bullet : MonoBehaviour
         // Homing: chain into another enemy
         if (_homing && _ricochetsLeft > 0)
         {
-            Enemy_Range next = FindHomingTarget(hit.point, enemy);
+            Transform next = FindHomingTarget(hit.point, enemy);
             if (next != null)
             {
                 _ricochetsLeft--;
                 bounce++;
                 _ignoreEnemy       = enemy;
                 transform.position = hit.point;
-                FaceTowards(next.transform.position);
+                FaceTowards(next.position);
                 return;
             }
         }
@@ -130,11 +130,11 @@ public class Bullet : MonoBehaviour
         if (_homing)
         {
             Vector2 from = hit.point + hit.normal * 0.05f;
-            Enemy_Range target = FindHomingTarget(from, null);
+            Transform target = FindHomingTarget(from, null);
             if (target != null)
             {
                 transform.position = from;
-                FaceTowards(target.transform.position);
+                FaceTowards(target.position);
                 return;
             }
         }
@@ -161,37 +161,54 @@ public class Bullet : MonoBehaviour
         {
             RaycastHit2D h = _hitBuffer[i];
             if (h.collider == null) continue;
-            if (_ignoreEnemy != null && h.collider.GetComponentInParent<Enemy_Range>() == _ignoreEnemy) continue;
+            if (_ignoreEnemy != null && h.collider.GetComponentInParent<IDamageable>() == _ignoreEnemy) continue;
             if (h.distance < best) { best = h.distance; nearest = h; found = true; }
         }
         return found;
     }
 
     /// <summary>Nearest living enemy (not 'exclude') with clear line of sight from 'from'.</summary>
-    private Enemy_Range FindHomingTarget(Vector2 from, Enemy_Range exclude)
+    private Transform FindHomingTarget(Vector2 from, IDamageable exclude)
     {
-        Enemy_Range best = null;
+        Transform best = null;
         float bestDist = homingSearchRadius;
 
-        Enemy_Range savedIgnore = _ignoreEnemy;
+        IDamageable savedIgnore = _ignoreEnemy;
         _ignoreEnemy = exclude;   // so the LOS ray doesn't hit the enemy we're leaving
 
-        List<Enemy_Range> all = Enemy_Range.Active;
+        List<Transform> all = new List<Transform>();
+        if (Enemy_Range.Active != null)
+        {
+            for (int i = 0; i < Enemy_Range.Active.Count; i++)
+            {
+                var e = Enemy_Range.Active[i];
+                if (e != null && (IDamageable)e != exclude && !e.IsDead) all.Add(e.transform);
+            }
+        }
+        if (Enemy_Close.Active != null)
+        {
+            for (int i = 0; i < Enemy_Close.Active.Count; i++)
+            {
+                var e = Enemy_Close.Active[i];
+                if (e != null && (IDamageable)e != exclude && !e.IsDead) all.Add(e.transform);
+            }
+        }
+
         for (int i = 0; i < all.Count; i++)
         {
-            Enemy_Range e = all[i];
-            if (e == null || e == exclude || e.IsDead) continue;
+            Transform t = all[i];
+            if (t == null) continue;
 
-            Vector2 to   = e.transform.position;
+            Vector2 to   = t.position;
             float   dist = Vector2.Distance(from, to);
             if (dist > bestDist || dist < 0.01f) continue;
 
             // Line of sight: first thing we hit must be this enemy (or nothing)
             if (CastNearest(from, (to - from).normalized, dist, out RaycastHit2D h)
-                && h.collider.GetComponentInParent<Enemy_Range>() != e)
+                && h.collider.transform.root != t.root)
                 continue;
 
-            best = e;
+            best = t;
             bestDist = dist;
         }
 

@@ -15,7 +15,7 @@ public class RailBullet : MonoBehaviour
     public GameObject[] bloodDecals;
     public GameObject bloodEffectPrefab;
 
-    private HashSet<Enemy_Range> _hitEnemies = new HashSet<Enemy_Range>();
+    private HashSet<IDamageable> _hitEnemies = new HashSet<IDamageable>();
     private HashSet<Collider2D> _hitWalls = new HashSet<Collider2D>();
 
     void Awake()
@@ -44,7 +44,7 @@ public class RailBullet : MonoBehaviour
         {
             if (hit.collider == null) continue;
 
-            Enemy_Range enemy = hit.collider.GetComponentInParent<Enemy_Range>();
+            IDamageable enemy = hit.collider.GetComponentInParent<IDamageable>();
             bool isShield = hit.collider.name == "rw" || hit.collider.gameObject.layer == LayerMask.NameToLayer("Wall");
 
             if (enemy != null && !isShield)
