@@ -15,9 +15,9 @@ GameObject:
   - component: {fileID: 3642402159102102877}
   - component: {fileID: 2154737657355558200}
   - component: {fileID: -2001762048672685484}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Enemy_melee
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -278,7 +278,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6756143317022330689}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
