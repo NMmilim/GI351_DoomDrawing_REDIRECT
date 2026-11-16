@@ -737,17 +737,21 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
+      propertyPath: offerUpgradesBetweenWaves
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: waves.Array.data[1].waveName
       value: Enemy
       objectReference: {fileID: 0}
     - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: waves.Array.data[1].enemyCount
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: waves.Array.data[1].enemyPrefab
       value: 
-      objectReference: {fileID: 8213036424600395162, guid: 58168d38e043f164c8de99f02d70a083, type: 3}
+      objectReference: {fileID: 2785042427003900232, guid: 49db2b5a94ce3d74783347d67a0bc751, type: 3}
     - target: {fileID: 638744185911583299, guid: 86f27e6f233e73b4b90b00ab104c8506, type: 3}
       propertyPath: waves.Array.data[1].spawnInterval
       value: 1
