@@ -1,5 +1,83 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &84543037000589119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8962300902261234284}
+  - component: {fileID: 183960568516720781}
+  m_Layer: 3
+  m_Name: shield
+  m_TagString: Wall
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8962300902261234284
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84543037000589119}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
+  m_LocalPosition: {x: 1.47, y: 2.44, z: 0}
+  m_LocalScale: {x: 7.4545937, y: 7.4545937, z: 7.454596}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7944168247028919189}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!61 &183960568516720781
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 84543037000589119}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: -0.044046246, y: 0.31318146}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.1529604, y: 1.1493222}
+  m_EdgeRadius: 0
 --- !u!1 &2785042427003900232
 GameObject:
   m_ObjectHideFlags: 0
@@ -36,6 +114,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6756143317022330689}
+  - {fileID: 8962300902261234284}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: -90}
 --- !u!212 &6161340006984306238
@@ -85,7 +164,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_MaskInteraction: 0
   m_Sprite: {fileID: 8107377015559897822, guid: 46295ce3b369ec248b6cf0db6449b476, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -110,9 +189,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy_Close
   maxHp: 2
-  damage: 30
   coinReward: 5
   moveSpeed: 3.5
+  bloodSplatPrefab: {fileID: 7346654079416602471, guid: aaa0e3e898885b84ab260c886b8c7fa5, type: 3}
+  splatsPerHit: 3
+  splatRadius: 0.6
+  damage: 30
   rotationSpeed: 360
   attackRange: 1.2
   attackCooldown: 1
@@ -122,10 +204,7 @@ MonoBehaviour:
   telegraphColor: {r: 1, g: 0.5, b: 0.1, a: 0.35}
   hitboxColor: {r: 1, g: 0.15, b: 0.15, a: 0.8}
   hitboxDuration: 0.12
-  hitboxPrefab: {fileID: 0}
-  bloodSplatPrefab: {fileID: 7346654079416602471, guid: aaa0e3e898885b84ab260c886b8c7fa5, type: 3}
-  splatsPerHit: 3
-  splatRadius: 0.6
+  hitboxPrefab: {fileID: 3177168877644255646}
 --- !u!114 &5234077842926404273
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -278,7 +357,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6756143317022330689}
-  m_Layer: 7
+  - component: {fileID: 6713854770019746688}
+  m_Layer: 0
   m_Name: HitBox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -294,9 +374,55 @@ Transform:
   m_GameObject: {fileID: 3177168877644255646}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.7071068, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 3.49, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7944168247028919189}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!61 &6713854770019746688
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3177168877644255646}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 2.6015062, y: 0.02525711}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 6.2030125, y: 11.153454}
+  m_EdgeRadius: 0
