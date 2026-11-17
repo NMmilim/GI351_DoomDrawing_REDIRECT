@@ -5,11 +5,12 @@ using Pathfinding;   // A* Pathfinding Project — for AstarPath.active.GetNeare
 
 /// <summary>
 /// Wave-based enemy spawner for top-down 2D games.
+/// Unified single-class Wave architecture based on boss architectural feedback.
 ///
 /// SETUP
 ///   1. Place this script on an empty GameObject.
 ///   2. Set spawnRadius so enemies appear scattered around the spawner.
-///   3. Add at least one Wave entry and assign an Enemy_Range prefab.
+///   3. Add at least one Wave entry and assign an Enemy prefab.
 ///   4. Hit Play — the spawner handles the rest.
 ///
 /// NOTE: Spawn positions are snapped to the nearest walkable A* graph node,
@@ -18,47 +19,27 @@ using Pathfinding;   // A* Pathfinding Project — for AstarPath.active.GetNeare
 public class EnemySpawner : MonoBehaviour
 {
     // -----------------------------------------------------------------
-    //  Wave & Spawn Set Definitions
+    //  Unified Wave Definition (Merged Wave & SpawnSet into Single Class)
     // -----------------------------------------------------------------
-
-    [System.Serializable]
-    public class WaveSpawnSet
-    {
-        [Tooltip("Optional label for this spawn set within a wave (e.g. 'Ranged Squad', 'Shielded Elites').")]
-        public string setName = "Set";
-
-        [Tooltip("Enemy prefab to spawn in this set.")]
-        public GameObject enemyPrefab;
-
-        [Tooltip("How many enemies spawn in this set.")]
-        [Range(1, 50)]
-        public int enemyCount = 3;
-
-        [Tooltip("Seconds between each individual enemy spawn in this set.")]
-        public float spawnInterval = 0.8f;
-
-        [Tooltip("Seconds to wait after finishing this set before starting the next set in the same wave.")]
-        public float delayAfterSet = 1.5f;
-    }
 
     [System.Serializable]
     public class Wave
     {
-        [Tooltip("Display name shown in logs (optional).")]
+        [Tooltip("Display name shown in logs and UI (e.g. 'Wave 1 - Ranged Squad', 'Wave 2 - Melee Swarm').")]
         public string waveName = "Wave";
 
-        [Tooltip("Legacy single-prefab wave setting (used if spawnSets is empty).")]
+        [Tooltip("Enemy prefab to spawn in this wave.")]
         public GameObject enemyPrefab;
 
-        [Tooltip("How many enemies spawn in this wave (used if spawnSets is empty).")]
+        [Tooltip("How many enemies spawn in this wave.")]
         [Range(1, 50)]
         public int enemyCount = 3;
 
-        [Tooltip("Seconds between each individual enemy spawn (used if spawnSets is empty).")]
+        [Tooltip("Seconds between each individual enemy spawn in this wave.")]
         public float spawnInterval = 1f;
 
-        [Tooltip("Optional: Define multiple sets/batches of enemies within this wave.")]
-        public WaveSpawnSet[] spawnSets;
+        [Tooltip("Custom seconds to wait after this wave (set < 0 to use spawner default delayBetweenWaves).")]
+        public float customDelayAfterWave = -1f;
     }
 
     // -----------------------------------------------------------------
@@ -149,46 +130,21 @@ public class EnemySpawner : MonoBehaviour
                 _currentWaveIndex = waveIdx;
                 Wave wave = waves[waveIdx];
 
-                bool useSets = wave.spawnSets != null && wave.spawnSets.Length > 0;
-                if (!useSets && wave.enemyPrefab == null)
+                if (wave == null || wave.enemyPrefab == null)
                 {
-                    Debug.LogWarning($"[EnemySpawner] Wave '{wave.waveName}' has no prefab or spawn sets — skipping.");
+                    Debug.LogWarning($"[EnemySpawner] Wave '{wave?.waveName}' has no prefab assigned — skipping.");
                     continue;
                 }
 
                 float loopScale = Mathf.Pow(loopDifficultyMultiplier, _loopCount);
+                int count = Mathf.RoundToInt(wave.enemyCount * loopScale);
+                Debug.Log($"[EnemySpawner] Starting {wave.waveName} — {count} enemies (Loop {_loopCount + 1}).");
 
-                if (useSets)
+                for (int i = 0; i < count; i++)
                 {
-                    Debug.Log($"[EnemySpawner] Starting {wave.waveName} ({wave.spawnSets.Length} sets).");
-                    for (int s = 0; s < wave.spawnSets.Length; s++)
-                    {
-                        WaveSpawnSet set = wave.spawnSets[s];
-                        if (set == null || set.enemyPrefab == null) continue;
-
-                        int setCount = Mathf.RoundToInt(set.enemyCount * loopScale);
-                        for (int i = 0; i < setCount; i++)
-                        {
-                            SpawnEnemy(set.enemyPrefab);
-                            if (i < setCount - 1 && set.spawnInterval > 0f)
-                                yield return new WaitForSeconds(set.spawnInterval);
-                        }
-
-                        if (s < wave.spawnSets.Length - 1 && set.delayAfterSet > 0f)
-                            yield return new WaitForSeconds(set.delayAfterSet);
-                    }
-                }
-                else
-                {
-                    int count = Mathf.RoundToInt(wave.enemyCount * loopScale);
-                    Debug.Log($"[EnemySpawner] Starting {wave.waveName} — {count} enemies.");
-
-                    for (int i = 0; i < count; i++)
-                    {
-                        SpawnEnemy(wave.enemyPrefab);
-                        if (i < count - 1)
-                            yield return new WaitForSeconds(wave.spawnInterval);
-                    }
+                    SpawnEnemy(wave.enemyPrefab);
+                    if (i < count - 1 && wave.spawnInterval > 0f)
+                        yield return new WaitForSeconds(wave.spawnInterval);
                 }
 
                 if (waitForWaveClear)
@@ -199,7 +155,7 @@ public class EnemySpawner : MonoBehaviour
                 // ---- Wave cleared: coins + upgrade pick -------------------
                 if (waitForWaveClear)
                 {
-                    int clearedNumber = _loopCount * waves.Length + waveIdx + 1;   // 1-based, keeps counting across loops
+                    int clearedNumber = _loopCount * waves.Length + waveIdx + 1; // 1-based, keeps counting across loops
                     if (GameManager.Instance != null) GameManager.Instance.OnWaveCleared(clearedNumber);
 
                     // Game pauses while the screen is open; WaitUntil still runs at timeScale 0.
@@ -212,8 +168,9 @@ public class EnemySpawner : MonoBehaviour
 
                 if (hasNextWave)
                 {
-                    Debug.Log($"[EnemySpawner] {wave.waveName} complete. Next in {delayBetweenWaves}s.");
-                    yield return new WaitForSeconds(delayBetweenWaves);
+                    float waitTime = (wave.customDelayAfterWave >= 0f) ? wave.customDelayAfterWave : delayBetweenWaves;
+                    Debug.Log($"[EnemySpawner] {wave.waveName} complete. Next wave in {waitTime}s.");
+                    if (waitTime > 0f) yield return new WaitForSeconds(waitTime);
                 }
             }
 
@@ -235,10 +192,9 @@ public class EnemySpawner : MonoBehaviour
         Transform spawnOrigin = transform;
         if (spawnPoints != null && spawnPoints.Length > 0)
         {
-            // Pick a random spawn point that isn't null
             var validPoints = new List<Transform>();
-            foreach(var p in spawnPoints) if (p != null) validPoints.Add(p);
-            
+            foreach (var p in spawnPoints) if (p != null) validPoints.Add(p);
+
             if (validPoints.Count > 0)
                 spawnOrigin = validPoints[Random.Range(0, validPoints.Count)];
         }
@@ -247,8 +203,7 @@ public class EnemySpawner : MonoBehaviour
         Vector2 offset   = Random.insideUnitCircle * spawnRadius;
         Vector3 spawnPos = spawnOrigin.position + new Vector3(offset.x, offset.y, 0f);
 
-        // Snap to the nearest walkable A* graph node so the enemy always
-        // starts on valid pathfinding ground — no coordinate remapping needed.
+        // Snap to nearest walkable A* graph node
         if (AstarPath.active != null)
         {
             NNInfo info = AstarPath.active.GetNearest(spawnPos, NNConstraint.Default);
@@ -284,6 +239,7 @@ public class EnemySpawner : MonoBehaviour
     //  Public API
     // -----------------------------------------------------------------
 
+    public bool IsSpawning    => _spawning;
     public bool AllWavesDone  => _allWavesDone;
     public int  CurrentWave   => _currentWaveIndex;
     public int  AliveEnemies  => _aliveEnemies;
