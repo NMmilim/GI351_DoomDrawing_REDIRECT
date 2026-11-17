@@ -1,24 +1,25 @@
 using UnityEngine;
 
 /// <summary>
-/// FIX: this file contained a class called "NewMonoBehaviourScript", which doesn't match
-/// the filename (Unity can't attach it). Renamed to Upg_ricochet.
-///
-/// NOTE: Ricochet upgrades are now handled by UpgradeManager (wave-end cards) →
-/// PlayerManagement.UpgRicochet → Bullet. This script is not needed for that and can be
-/// deleted by the team if nobody plans to use it.
+/// Ricochet upgrade: increases the number of wall bounces for pistol bullets.
+/// Inherits from PlayerUpgrade to provide polymorphic execution.
 /// </summary>
-public class Upg_ricochet : MonoBehaviour
+[CreateAssetMenu(fileName = "Upgrade_Ricochet", menuName = "Upgrades/Player/Ricochet")]
+public class Upg_ricochet : PlayerUpgrade
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [Tooltip("Extra bounces granted per level of this upgrade.")]
+    public int extraBounces = 1;
+
+    public override void ApplyToPlayer(PlayerManagement pm)
     {
-        
+        if (pm == null) return;
+        pm.UpgRicochet += extraBounces;
     }
 
-    // Update is called once per frame
-    void Update()
+    public override string GetPreviewText(PlayerManagement pm)
     {
-        
+        if (pm == null) return "";
+        int now = 1 + pm.UpgRicochet;   // Base ricochet = 1
+        return $"Bounces: {now} → {now + extraBounces}";
     }
 }

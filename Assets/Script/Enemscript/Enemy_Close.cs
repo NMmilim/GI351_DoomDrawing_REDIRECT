@@ -1,19 +1,16 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Pathfinding;   // A* Pathfinding Project
+using Pathfinding;
 
 /// <summary>
-/// Melee enemy AI using A* Pathfinding Project (AIPath) for 2D top-down pursuit.
-/// Unlike Enemy_Range, this unit does not use cover, peeking, or hiding systems.
-/// When in attack range, it telegraphs a short swing cone, pauses to wind up,
-/// and then spawns an active cone "hitbox" that deals damage to the player.
+/// Melee enemy archetype inheriting from EnemyBase.
+/// Implements melee pursuit and attack abilities (flickering telegraph cone, windup freeze, active hitbox cone),
+/// while inheriting core attributes, health, coin rewards, and damage handling from EnemyBase.
 /// </summary>
-[RequireComponent(typeof(AIPath))]
-[RequireComponent(typeof(Seeker))]
-public class Enemy_Close : MonoBehaviour, IDamageable
+public class Enemy_Close : EnemyBase
 {
     // -----------------------------------------------------------------
-    //  Active Enemies Registry
+    //  Active Enemies Registry (Maintained for backwards compatibility)
     // -----------------------------------------------------------------
     public static readonly List<Enemy_Close> Active = new List<Enemy_Close>();
 
@@ -28,28 +25,15 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     }
 
     // -----------------------------------------------------------------
-    //  Inspector - Stats & Attributes
+    //  Inspector - Archetype Abilities & Combat Settings
     // -----------------------------------------------------------------
-    [Header("Stats & Attributes")]
-    [Tooltip("Health points before dying.")]
-    public int maxHp = 2;
-
+    [Header("Melee Combat Attributes")]
     [Tooltip("Damage dealt to the player per melee hit.")]
     public int damage = 25;
-
-    [Tooltip("Coins awarded to the player when this enemy is defeated.")]
-    public int coinReward = 5;
-
-    [Header("Locomotion (A* Pathfinding)")]
-    [Tooltip("Movement speed while pursuing the player.")]
-    public float moveSpeed = 3.5f;
 
     [Tooltip("Degrees per second the body rotates toward the target.")]
     public float rotationSpeed = 360f;
 
-    // -----------------------------------------------------------------
-    //  Inspector - Melee Attack & Telegraph
-    // -----------------------------------------------------------------
     [Header("Melee Attack & Telegraph")]
     [Tooltip("Distance from the player (in world units) to initiate an attack windup.")]
     public float attackRange = 1.6f;
@@ -79,91 +63,55 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     [Tooltip("Optional custom prefab for the hitbox cone. If null, a procedural cone hitbox GameObject is spawned.")]
     public GameObject hitboxPrefab;
 
-    [Header("Effects")]
-    [Tooltip("Blood splat prefab instantiated when taking damage.")]
-    public GameObject bloodSplatPrefab;
-
-    [Range(1, 8)]
-    public int splatsPerHit = 3;
-    public float splatRadius = 0.6f;
-
     // -----------------------------------------------------------------
-    //  State & References
+    //  Runtime State
     // -----------------------------------------------------------------
-    private AIPath      _ai;
-    private Rigidbody2D _rb;
-    private Transform   _player;
-    private EnemyStats _stats;
-    private int        _currentHp;
     private float      _attackTimer;
     private float      _stateTimer;
     private MeleeState _state = MeleeState.Chasing;
-    private bool       _isDead;
 
-    // Telegraph visual cone
+    // Telegraph visual cone components
     private GameObject   _telegraphObj;
     private MeshFilter   _telegraphFilter;
     private MeshRenderer _telegraphRenderer;
     private Mesh         _telegraphMesh;
 
-    public bool       IsDead       => _isDead;
-    public int        CurrentHp    => _currentHp;
     public MeleeState CurrentState => _state;
 
-    private void OnEnable()
+    // -----------------------------------------------------------------
+    //  Lifecycle
+    // -----------------------------------------------------------------
+    protected override void OnEnable()
     {
+        base.OnEnable();
         if (!Active.Contains(this)) Active.Add(this);
     }
 
-    private void OnDisable()
+    protected override void OnDisable()
     {
+        base.OnDisable();
         Active.Remove(this);
         HideTelegraphCone();
     }
 
-    private void Awake()
+    protected override void Awake()
     {
-        _ai    = GetComponent<AIPath>();
-        _rb    = GetComponent<Rigidbody2D>();
-        _stats = GetComponent<EnemyStats>();
-
-        // Configure AIPath for top-down 2D
-        if (_ai != null)
-        {
-            _ai.enableRotation = false; // We rotate the transform ourselves
-            _ai.gravity        = Vector3.zero;
-            _ai.orientation    = OrientationMode.YAxisForward;
-        }
-
+        base.Awake();
         SetupTelegraphCone();
     }
 
-    private void Start()
+    protected override void Start()
     {
-        // Pull stats from EnemyStats if attached, else use inspector defaults
+        base.Start();
+
         if (_stats != null)
         {
-            maxHp      = _stats.MaxHp;
-            damage     = _stats.Damage;
-            moveSpeed  = _stats.MoveSpeed;
-            coinReward = _stats.CoinReward;
+            damage = _stats.Damage;
         }
 
         if (_ai != null)
         {
             _ai.maxSpeed = moveSpeed;
-        }
-
-        _currentHp = maxHp;
-        AcquirePlayer();
-    }
-
-    private void AcquirePlayer()
-    {
-        GameObject playerGO = GameObject.FindWithTag("Player");
-        if (playerGO != null)
-        {
-            _player = playerGO.transform;
         }
     }
 
@@ -173,7 +121,8 @@ public class Enemy_Close : MonoBehaviour, IDamageable
 
         if (_player == null)
         {
-            AcquirePlayer();
+            GameObject playerGO = GameObject.FindWithTag("Player");
+            if (playerGO != null) _player = playerGO.transform;
             if (_player == null) return;
         }
 
@@ -196,19 +145,13 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     // -----------------------------------------------------------------
     //  State Logic
     // -----------------------------------------------------------------
-
     private void TickChasing()
     {
         if (_attackTimer > 0f)
             _attackTimer -= Time.deltaTime;
 
         // Pathfind towards player
-        if (_ai != null)
-        {
-            _ai.isStopped   = false;
-            _ai.destination = _player.position;
-        }
-
+        SetDestination(_player.position);
         UpdateRotation();
 
         // Check if player is within attack range
@@ -224,9 +167,9 @@ public class Enemy_Close : MonoBehaviour, IDamageable
         _state      = MeleeState.Windup;
         _stateTimer = swingWindupTime;
 
-        if (_ai != null)
-            _ai.isStopped = true;
+        StopMoving();
 
+        // Lock physics completely during attack windup so external contacts do not shove the enemy
         if (_rb != null)
         {
             _rb.linearVelocity = Vector2.zero;
@@ -241,7 +184,7 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     {
         _stateTimer -= Time.deltaTime;
 
-        // Flicker warning cone on and off rapidly during windup
+        // Flicker warning cone on and off rapidly during windup (16 Hz)
         if (_telegraphRenderer != null)
         {
             bool isFlickerOn = (Mathf.FloorToInt(_stateTimer * 16f) % 2) == 0;
@@ -262,6 +205,7 @@ public class Enemy_Close : MonoBehaviour, IDamageable
         HideTelegraphCone();
         SpawnHitboxCone();
 
+        // Restore normal rotation constraint
         if (_rb != null)
         {
             _rb.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -286,7 +230,6 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     // -----------------------------------------------------------------
     //  Hitbox & Telegraph Cone Systems
     // -----------------------------------------------------------------
-
     private void SetupTelegraphCone()
     {
         _telegraphObj = new GameObject("SwingTelegraphCone");
@@ -406,49 +349,13 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     }
 
     // -----------------------------------------------------------------
-    //  IDamageable Implementation
+    //  Death Override
     // -----------------------------------------------------------------
-    public void RegisterHit(int amount)
+    protected override void Die()
     {
-        if (_isDead || amount <= 0) return;
-
-        SpawnBlood(transform.position);
-        _currentHp -= amount;
-
-        if (_currentHp <= 0)
-        {
-            Die();
-        }
-    }
-
-    private void SpawnBlood(Vector2 point)
-    {
-        if (bloodSplatPrefab == null) return;
-
-        for (int i = 0; i < splatsPerHit; i++)
-        {
-            Vector2 offset = Random.insideUnitCircle * splatRadius;
-            Vector3 pos    = (Vector3)(point + offset);
-            Instantiate(bloodSplatPrefab, pos, Quaternion.Euler(0f, 0f, Random.Range(0f, 360f)));
-        }
-    }
-
-    private void Die()
-    {
-        if (_isDead) return;
-        _isDead = true;
-
         HideTelegraphCone();
-
-        if (_ai != null)
-            _ai.isStopped = true;
-
-        if (GameManager.Instance != null)
-        {
-            GameManager.Instance.OnEnemyKilled(coinReward);
-        }
-
-        Destroy(gameObject);
+        Active.Remove(this);
+        base.Die();
     }
 
     // -----------------------------------------------------------------
@@ -456,7 +363,6 @@ public class Enemy_Close : MonoBehaviour, IDamageable
     // -----------------------------------------------------------------
     private void OnDrawGizmosSelected()
     {
-        // Draw swing cone in Editor
         Gizmos.color = (_state == MeleeState.Windup) ? hitboxColor : telegraphColor;
         Vector3 origin = transform.position;
         float halfAngle = swingAngle * 0.5f;

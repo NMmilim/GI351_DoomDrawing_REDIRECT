@@ -182,25 +182,12 @@ public class EnemyIndicator : MonoBehaviour
     {
         _aliveEnemies.Clear();
 
-        // 1. Primary source: Active static lists
-        if (Enemy_Range.Active != null)
+        // 1. Primary source: EnemyBase Active static registry
+        if (EnemyBase.ActiveEnemies != null)
         {
-            for (int i = 0; i < Enemy_Range.Active.Count; i++)
+            for (int i = 0; i < EnemyBase.ActiveEnemies.Count; i++)
             {
-                var enemy = Enemy_Range.Active[i];
-                if (enemy != null && !enemy.IsDead && enemy.gameObject.activeInHierarchy)
-                {
-                    Transform t = enemy.transform;
-                    if (!_aliveEnemies.Contains(t)) _aliveEnemies.Add(t);
-                }
-            }
-        }
-
-        if (Enemy_Close.Active != null)
-        {
-            for (int i = 0; i < Enemy_Close.Active.Count; i++)
-            {
-                var enemy = Enemy_Close.Active[i];
+                var enemy = EnemyBase.ActiveEnemies[i];
                 if (enemy != null && !enemy.IsDead && enemy.gameObject.activeInHierarchy)
                 {
                     Transform t = enemy.transform;

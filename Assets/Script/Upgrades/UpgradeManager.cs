@@ -33,6 +33,11 @@ public class UpgradeDefinition
     [Tooltip("How many times this can be picked in one run. 0 = unlimited.")]
     [Min(0)] public int maxStacks = 0;
 
+    [Tooltip("Polymorphic upgrade class asset. If assigned, its polymorphic ApplyToPlayer() is used.")]
+    public PlayerUpgrade upgradeClass;
+
+    private PlayerUpgrade _resolved;
+
     public UpgradeDefinition(UpgradeType type, string title, string description,
                              UpgradeRarity rarity, float weight, int maxStacks)
     {
@@ -42,6 +47,47 @@ public class UpgradeDefinition
         this.rarity      = rarity;
         this.weight      = weight;
         this.maxStacks   = maxStacks;
+    }
+
+    public PlayerUpgrade GetLogic()
+    {
+        if (upgradeClass != null) return upgradeClass;
+        if (_resolved == null)
+            _resolved = CreateInstanceForType(type, title, description, rarity, weight, maxStacks);
+        return _resolved;
+    }
+
+    private static PlayerUpgrade CreateInstanceForType(UpgradeType type, string title, string description,
+                                                       UpgradeRarity rarity, float weight, int maxStacks)
+    {
+        PlayerUpgrade u;
+        switch (type)
+        {
+            case UpgradeType.Ricochet:         u = ScriptableObject.CreateInstance<Upg_ricochet>(); break;
+            case UpgradeType.FireRate:         u = ScriptableObject.CreateInstance<FireRateUpgrade>(); break;
+            case UpgradeType.WalkSpeed:        u = ScriptableObject.CreateInstance<WalkSpeedUpgrade>(); break;
+            case UpgradeType.MagazineCapacity: u = ScriptableObject.CreateInstance<MagazineCapacityUpgrade>(); break;
+            case UpgradeType.HomingRicochet:   u = ScriptableObject.CreateInstance<HomingRicochetUpgrade>(); break;
+            default:                           u = ScriptableObject.CreateInstance<Upg_dmg>(); break;
+        }
+        u.title       = title;
+        u.description = description;
+        u.rarity      = rarity;
+        u.weight      = weight;
+        u.maxStacks   = maxStacks;
+        return u;
+    }
+
+    /// <summary>Polymorphic execution via PlayerUpgrade class inheritance.</summary>
+    public void Apply(PlayerManagement pm)
+    {
+        GetLogic()?.ApplyToPlayer(pm);
+    }
+
+    /// <summary>Polymorphic preview text via PlayerUpgrade class inheritance.</summary>
+    public string GetPreviewText(PlayerManagement pm)
+    {
+        return GetLogic()?.GetPreviewText(pm) ?? "";
     }
 }
 
@@ -147,7 +193,7 @@ public class UpgradeManager : MonoBehaviour
             {
                 UpgradeDefinition def = _offered[i];
                 cards[i].gameObject.SetActive(true);
-                cards[i].Bind(def, GetPreviewText(def.type), GetRarityColor(def.rarity), i, Pick);
+                cards[i].Bind(def, def.GetPreviewText(PlayerManagement.Instance), GetRarityColor(def.rarity), i, Pick);
             }
             else
             {
@@ -166,7 +212,7 @@ public class UpgradeManager : MonoBehaviour
         if (!IsOpen || index < 0 || index >= _offered.Count) return;
 
         UpgradeDefinition def = _offered[index];
-        Apply(def.type);
+        Apply(def);
 
         _stacks.TryGetValue(def.type, out int n);
         _stacks[def.type] = n + 1;
@@ -229,54 +275,25 @@ public class UpgradeManager : MonoBehaviour
     }
 
     // -----------------------------------------------------------------
-    //  Applying
+    //  Applying (Polymorphic Class Inheritance)
     // -----------------------------------------------------------------
 
-    private void Apply(UpgradeType type)
+    private void Apply(UpgradeDefinition def)
     {
         PlayerManagement pm = PlayerManagement.Instance;
-        if (pm == null) return;
+        if (pm == null || def == null) return;
 
-        switch (type)
-        {
-            case UpgradeType.Ricochet:         pm.UpgRicochet++;        break;
-            case UpgradeType.FireRate:         pm.fireRateLevel++;      break;
-            case UpgradeType.WalkSpeed:        pm.walkSpeedLevel++;     break;
-            case UpgradeType.MagazineCapacity: pm.magazineLevel++;      break;
-            case UpgradeType.HomingRicochet:   pm.homingRicochet = true; break;
-        }
-
+        // Polymorphic upgrade execution using PlayerUpgrade class inheritance
+        def.Apply(pm);
         pm.RecalculateStats();
     }
 
-    /// <summary>"current → next" line shown on the card so players see exactly what changes.</summary>
-    private string GetPreviewText(UpgradeType type)
+    /// <summary>Polymorphic "current → next" line shown on the card.</summary>
+    public string GetPreviewText(UpgradeDefinition def)
     {
         PlayerManagement pm = PlayerManagement.Instance;
-        if (pm == null) return "";
-
-        switch (type)
-        {
-            case UpgradeType.Ricochet:
-            {
-                int now = 1 + pm.UpgRicochet;   // base ricochet = 1
-                return $"Bounces: {now} → {now + 1}";
-            }
-            case UpgradeType.FireRate:
-            {
-                float now  = 1f / pm.fireInterval;
-                float next = 1f / Mathf.Max(pm.minFireInterval, pm.fireInterval * pm.fireRateMultiplierPerLevel);
-                return $"Shots/sec: {now:0.0} → {next:0.0}";
-            }
-            case UpgradeType.WalkSpeed:
-                return $"Speed: {pm.speed:0.0} → {pm.speed + pm.walkSpeedPerLevel:0.0}";
-            case UpgradeType.MagazineCapacity:
-                return $"Magazine: {pm.magazineSize} → {pm.magazineSize + pm.magazinePerLevel}";
-            case UpgradeType.HomingRicochet:
-                return "Ricochets seek enemies";
-            default:
-                return "";
-        }
+        if (pm == null || def == null) return "";
+        return def.GetPreviewText(pm);
     }
 
     // -----------------------------------------------------------------

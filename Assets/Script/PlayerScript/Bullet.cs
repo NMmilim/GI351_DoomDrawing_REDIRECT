@@ -177,19 +177,11 @@ public class Bullet : MonoBehaviour
         _ignoreEnemy = exclude;   // so the LOS ray doesn't hit the enemy we're leaving
 
         List<Transform> all = new List<Transform>();
-        if (Enemy_Range.Active != null)
+        if (EnemyBase.ActiveEnemies != null)
         {
-            for (int i = 0; i < Enemy_Range.Active.Count; i++)
+            for (int i = 0; i < EnemyBase.ActiveEnemies.Count; i++)
             {
-                var e = Enemy_Range.Active[i];
-                if (e != null && (IDamageable)e != exclude && !e.IsDead) all.Add(e.transform);
-            }
-        }
-        if (Enemy_Close.Active != null)
-        {
-            for (int i = 0; i < Enemy_Close.Active.Count; i++)
-            {
-                var e = Enemy_Close.Active[i];
+                var e = EnemyBase.ActiveEnemies[i];
                 if (e != null && (IDamageable)e != exclude && !e.IsDead) all.Add(e.transform);
             }
         }

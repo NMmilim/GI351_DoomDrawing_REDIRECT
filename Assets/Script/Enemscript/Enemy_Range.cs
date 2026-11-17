@@ -49,7 +49,7 @@ using Pathfinding;   // A* Pathfinding Project
 /// </summary>
 [RequireComponent(typeof(AIPath))]
 [RequireComponent(typeof(Seeker))]
-public class Enemy_Range : MonoBehaviour, IDamageable
+public class Enemy_Range : EnemyBase, IAlertable
 {
     // -----------------------------------------------------------------
     //  Inspector - References
@@ -62,27 +62,11 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     [Tooltip("Muzzle / fire position.")]
     public Transform firepos;
 
-    [Tooltip("Blood splat prefab.")]
-    public GameObject bloodSplatPrefab;
-
     // -----------------------------------------------------------------
-    //  Inspector - Stats
+    //  Inspector - Movement (Specific to Ranged Archetype)
     // -----------------------------------------------------------------
 
-    [Header("Stats")]
-    public int maxHp = 3;
-
-    [Tooltip("Coins added to the run total when this enemy dies (banked on Game Over).")]
-    public int coinReward = 5;
-
-    // -----------------------------------------------------------------
-    //  Inspector - Movement
-    // -----------------------------------------------------------------
-
-    [Header("Movement")]
-    [Tooltip("Speed when running to cover or the peek position.")]
-    public float moveSpeed = 3f;
-
+    [Header("Movement (Ranged AI)")]
     [Tooltip("Slower speed used only during Roaming state — simulates cautious walking.")]
     public float roamSpeed = 1.2f;
 
@@ -183,14 +167,6 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     [Tooltip("Layers that block bullets — used for the clear-shot raycast.")]
     public LayerMask obstacleMask;
 
-    // -----------------------------------------------------------------
-    //  Inspector - Blood Splatter
-    // -----------------------------------------------------------------
-
-    [Header("Blood Splatter")]
-    [Range(1, 8)]
-    public int splatsPerHit = 3;
-    public float splatRadius = 0.6f;
 
     // -----------------------------------------------------------------
     //  State Machine
@@ -211,10 +187,7 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     //  Private - References
     // -----------------------------------------------------------------
 
-    private int      _hp;
-    private AIPath   _ai;
     private EnemyFOV _fov;
-    private Transform _player;
 
     // -----------------------------------------------------------------
     //  Private - Timers
@@ -261,7 +234,6 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     //  Private - Aim Telegraph
     // -----------------------------------------------------------------
 
-    private Rigidbody2D _rb;
     private bool        _isAiming;
     private float       _aimTimer;
     private Vector2     _lockedAimDir;
@@ -285,12 +257,15 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     public static readonly System.Collections.Generic.List<Enemy_Range> Active =
         new System.Collections.Generic.List<Enemy_Range>();
 
-    private bool _dead;
-    public bool IsDead => _dead;
-
-    private void OnEnable()  { if (!Active.Contains(this)) Active.Add(this); }
-    private void OnDisable()
+    protected override void OnEnable()
     {
+        base.OnEnable();
+        if (!Active.Contains(this)) Active.Add(this);
+    }
+
+    protected override void OnDisable()
+    {
+        base.OnDisable();
         Active.Remove(this);
         HideAimLine();
     }
@@ -299,36 +274,22 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     //  Unity Messages
     // -----------------------------------------------------------------
 
-    private void Awake()
+    protected override void Awake()
     {
-        _ai  = GetComponent<AIPath>();
-        _rb  = GetComponent<Rigidbody2D>();
+        base.Awake();
         _fov = GetComponentInChildren<EnemyFOV>();
-
-        // 2D configuration for AIPath
-        _ai.enableRotation = false;   // we rotate the body ourselves
-        _ai.gravity        = Vector3.zero;
-        _ai.orientation    = OrientationMode.YAxisForward;
     }
 
-    private void Start()
+    protected override void Start()
     {
-        _hp = maxHp;
+        base.Start();
 
         if (aimLine == null)
             aimLine = CreateAimLine();
         HideAimLine();
 
-        GameObject playerGO = GameObject.FindWithTag("Player");
-        if (playerGO != null)
-        {
-            _player = playerGO.transform;
-            if (_fov != null) _fov._playerRef = _player;
-        }
-        else
-        {
-            Debug.LogWarning($"[Enemy_Range] '{name}': No 'Player' tagged object found.");
-        }
+        if (_fov != null && _player != null)
+            _fov._playerRef = _player;
 
         _spawnTimer         = 0f;
         _spawnRoamTriggered = false;
@@ -895,58 +856,24 @@ public class Enemy_Range : MonoBehaviour, IDamageable
     }
 
     // -----------------------------------------------------------------
-    //  Damage / Death
+    //  Death Override
     // -----------------------------------------------------------------
 
-    public void RegisterHit(int amount)
+    protected override void Die()
     {
-        if (_dead) return;   // already dying this frame — ignore extra hits
-
-        if (bloodSplatPrefab != null)
-        {
-            for (int i = 0; i < splatsPerHit; i++)
-            {
-                Vector2 offset   = Random.insideUnitCircle * splatRadius;
-                Vector3 splatPos = transform.position + new Vector3(offset.x, offset.y, 0f);
-                Instantiate(bloodSplatPrefab, splatPos, Quaternion.Euler(0f, 0f, Random.Range(0f, 360f)));
-            }
-        }
-
-        _hp -= amount;
-        if (_hp <= 0)
-        {
-            _dead = true;
-            HideAimLine();
-            Active.Remove(this);
-            if (_currentCover != null) _currentCover.Release(this);
-            if (GameManager.Instance != null) GameManager.Instance.OnEnemyKilled(coinReward);
-            Destroy(gameObject);
-        }
+        HideAimLine();
+        Active.Remove(this);
+        if (_currentCover != null) _currentCover.Release(this);
+        base.Die();
     }
 
     // -----------------------------------------------------------------
     //  AIPath Helpers
     // -----------------------------------------------------------------
 
-    private void SetDestination(Vector3 pos)
-    {
-        _ai.isStopped   = false;
-        _ai.destination = pos;
-    }
-
-    private void SetSpeed(float speed)
-    {
-        _ai.maxSpeed = speed;
-    }
-
-    private void StopMoving()
-    {
-        _ai.isStopped = true;
-    }
-
     private bool HasArrived()
     {
-        return !_ai.pathPending && _ai.remainingDistance <= arrivalThreshold;
+        return base.HasArrived(arrivalThreshold);
     }
 
     // -----------------------------------------------------------------
